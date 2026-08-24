@@ -1,5 +1,6 @@
 from .config_loader import config_loader
 from .models.config import ConfigFile
+from .game import run_game
 import sys
 from mazegenerator import MazeGenerator
 
@@ -16,4 +17,4 @@ if __name__ == "__main__":
     )
 
     maze.generate()
-    print(maze.maze)
+    run_game(maze.maze)
