@@ -1,17 +1,81 @@
-from typing import List
+"""
+Platformer Game
+
+python -m arcade.examples.platform_tutorial.04_user_control
+"""
 import arcade
 
-WINDOW_WIDTH = 800
-WINDOW_HEIGHT = 800
-WINDOW_TITLE = "Pac-Man"
+# Constants
+WINDOW_WIDTH = 1280
+WINDOW_HEIGHT = 720
+WINDOW_TITLE = "Platformer"
 
+# Constants used to scale our sprites from their original size
+TILE_SCALING = 0.5
 
+# Movement speed of player, in pixels per frame
+PLAYER_MOVEMENT_SPEED = 5
 
 
 class GameView(arcade.Window):
+    """
+    Main application class.
+    """
+
     def __init__(self):
 
+        # Call the parent class and set up the window
         super().__init__(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
+
+        # Variable to hold our texture for our player
+        self.player_texture = arcade.load_texture(
+            ":resources:images/animated_characters/female_adventurer/femaleAdventurer_idle.png"
+        )
+
+        # Separate variable that holds the player sprite
+        self.player_sprite = arcade.Sprite(self.player_texture)
+        self.player_sprite.center_x = 64
+        self.player_sprite.center_y = 128
+
+        # SpriteList for our player
+        self.player_list = arcade.SpriteList()
+        self.player_list.append(self.player_sprite)
+
+        # SpriteList for our boxes and ground
+        # Putting our ground and box Sprites in the same SpriteList
+        # will make it easier to perform collision detection against
+        # them later on. Setting the spatial hash to True will make
+        # collision detection much faster if the objects in this
+        # SpriteList do not move.
+        self.wall_list = arcade.SpriteList(use_spatial_hash=True)
+
+        # Create the ground
+        # This shows using a loop to place multiple sprites horizontally
+        for x in range(0, 1250, 64):
+            wall = arcade.Sprite(":resources:images/tiles/grassMid.png", scale=TILE_SCALING)
+            wall.center_x = x
+            wall.center_y = 32
+            self.wall_list.append(wall)
+
+        # Put some crates on the ground
+        # This shows using a coordinate list to place sprites
+        coordinate_list = [[512, 96], [256, 96], [768, 96]]
+
+        for coordinate in coordinate_list:
+            # Add a crate on the ground
+            wall = arcade.Sprite(
+                ":resources:images/tiles/boxCrate_double.png", scale=TILE_SCALING
+            )
+            wall.position = coordinate
+            self.wall_list.append(wall)
+
+        # Create a Simple Physics Engine, this will handle moving our
+        # player as well as collisions between the player sprite and
+        # whatever SpriteList we specify for the walls.
+        self.physics_engine = arcade.PhysicsEngineSimple(
+            self.player_sprite, self.wall_list
+        )
+
         self.background_color = arcade.csscolor.CORNFLOWER_BLUE
 
     def setup(self):
@@ -20,9 +84,43 @@ class GameView(arcade.Window):
 
     def on_draw(self):
         """Render the screen."""
-        maze = [[9, 1, 5, 5, 5, 1, 1, 1, 3, 9, 5, 1, 1, 5, 1, 3, 9, 1, 3, 9, 1, 1, 3, 9, 3, 9, 3, 9, 5, 3], [8, 4, 5, 1, 3, 10, 8, 4, 2, 8, 3, 8, 2, 9, 6, 10, 10, 8, 4, 4, 4, 2, 8, 6, 10, 10, 8, 6, 9, 6], [8, 5, 3, 8, 2, 10, 12, 3, 12, 2, 12, 4, 6, 8, 5, 6, 8, 6, 9, 5, 1, 2, 12, 1, 2, 10, 8, 3, 12, 3], [8, 3, 12, 6, 12, 4, 5, 4, 3, 8, 5, 1, 1, 6, 9, 1, 6, 9, 2, 9, 2, 8, 1, 6, 12, 4, 6, 8, 3, 10], [10, 8, 1, 1, 5, 1, 5, 1, 6, 8, 1, 2, 10, 9, 4, 0, 1, 6, 12, 2, 8, 4, 6, 9, 1, 5, 5, 2, 10, 10], [10, 8, 2, 8, 3, 8, 3, 8, 5, 2, 12, 4, 2, 8, 3, 10, 8, 1, 3, 8, 4, 1, 1, 4, 6, 9, 3, 10, 12, 2], [8, 2, 8, 4, 4, 6, 12, 0, 3, 12, 5, 3, 10, 10, 12, 0, 2, 8, 2, 8, 1, 6, 12, 5, 1, 2, 10, 12, 5, 2], [10, 8, 0, 5, 5, 1, 1, 4, 4, 3, 9, 2, 12, 4, 3, 10, 8, 2, 8, 4, 4, 1, 1, 3, 8, 4, 2, 9, 5, 2], [12, 2, 8, 5, 1, 2, 8, 1, 1, 4, 6, 10, 9, 5, 4, 0, 6, 12, 2, 9, 3, 10, 8, 2, 8, 5, 4, 4, 1, 6], [9, 6, 8, 1, 2, 8, 2, 8, 2, 9, 1, 4, 4, 5, 3, 8, 1, 3, 8, 6, 12, 2, 10, 12, 0, 5, 1, 3, 12, 3], [8, 1, 2, 10, 12, 4, 6, 12, 2, 12, 2, 9, 5, 1, 6, 12, 6, 10, 12, 1, 5, 2, 10, 9, 4, 3, 10, 8, 5, 2], [10, 8, 2, 12, 1, 5, 1, 3, 8, 3, 8, 4, 3, 12, 1, 5, 5, 4, 3, 10, 9, 4, 2, 8, 1, 4, 2, 8, 3, 10], [12, 4, 2, 9, 4, 3, 12, 2, 10, 8, 2, 15, 8, 1, 2, 15, 15, 15, 8, 6, 8, 1, 4, 6, 8, 3, 8, 2, 12, 2], [9, 1, 6, 12, 1, 4, 5, 2, 8, 2, 10, 15, 12, 4, 0, 5, 7, 15, 8, 3, 10, 8, 1, 1, 2, 8, 4, 4, 1, 6], [8, 4, 1, 1, 4, 5, 3, 10, 10, 8, 2, 15, 15, 15, 10, 15, 15, 15, 8, 4, 2, 10, 10, 8, 2, 10, 9, 5, 4, 3], [8, 1, 2, 8, 1, 3, 8, 2, 12, 4, 4, 5, 3, 15, 10, 15, 13, 5, 0, 3, 12, 4, 2, 10, 10, 8, 4, 1, 3, 10], [10, 10, 10, 12, 2, 10, 10, 12, 5, 5, 5, 5, 2, 15, 10, 15, 15, 15, 10, 8, 1, 1, 2, 10, 12, 2, 9, 6, 10, 10], [8, 6, 12, 3, 10, 8, 2, 9, 5, 5, 5, 5, 6, 9, 4, 3, 9, 3, 8, 6, 8, 4, 6, 12, 1, 4, 2, 9, 2, 10], [12, 5, 1, 4, 6, 8, 6, 12, 5, 5, 3, 9, 5, 2, 9, 2, 10, 8, 4, 3, 12, 1, 1, 3, 8, 1, 6, 10, 10, 10], [9, 1, 4, 5, 3, 8, 1, 1, 3, 9, 4, 4, 3, 8, 6, 12, 4, 4, 3, 12, 5, 2, 10, 10, 8, 4, 1, 2, 8, 2], [12, 4, 1, 1, 4, 2, 12, 2, 12, 4, 1, 1, 4, 6, 9, 1, 1, 3, 8, 3, 9, 2, 8, 6, 12, 1, 4, 0, 4, 2], [9, 5, 6, 12, 3, 8, 3, 12, 5, 3, 10, 12, 5, 5, 2, 8, 6, 12, 4, 6, 10, 12, 4, 1, 3, 12, 5, 0, 3, 10], [8, 5, 1, 3, 10, 10, 8, 5, 3, 10, 12, 1, 1, 3, 12, 0, 5, 1, 5, 1, 4, 1, 1, 2, 12, 1, 3, 12, 4, 2], [12, 1, 2, 10, 10, 8, 4, 3, 8, 2, 9, 4, 4, 4, 3, 12, 5, 2, 9, 4, 3, 8, 6, 12, 1, 6, 12, 5, 3, 10], [9, 6, 10, 12, 0, 2, 9, 4, 4, 2, 8, 5, 1, 3, 12, 5, 5, 6, 8, 3, 10, 8, 1, 3, 10, 9, 5, 3, 10, 10], [10, 9, 4, 5, 2, 10, 12, 5, 5, 2, 8, 5, 2, 8, 3, 9, 5, 3, 10, 8, 4, 2, 8, 4, 6, 12, 3, 10, 8, 6], [10, 10, 9, 3, 10, 12, 5, 3, 9, 4, 4, 3, 10, 8, 6, 12, 3, 12, 4, 4, 5, 2, 12, 3, 9, 1, 2, 10, 8, 3], [10, 10, 10, 8, 4, 3, 9, 4, 6, 9, 1, 6, 8, 4, 1, 5, 0, 3, 9, 1, 3, 12, 3, 12, 6, 10, 10, 8, 2, 10], [10, 12, 6, 8, 3, 8, 2, 9, 3, 8, 4, 1, 0, 3, 12, 5, 4, 6, 10, 8, 0, 3, 10, 9, 1, 2, 10, 10, 12, 2], [12, 5, 5, 6, 12, 4, 4, 6, 12, 4, 5, 4, 4, 4, 5, 5, 5, 5, 4, 4, 4, 6, 12, 4, 4, 4, 4, 4, 5, 6]]
-        draw_maze(maze)
-        
+
+        # Clear the screen to the background color
+        self.clear()
+
+        # Draw our sprites
+        self.player_list.draw()
+        self.wall_list.draw()
+
+    def on_update(self, delta_time):
+        """Movement and Game Logic"""
+
+        # Move the player using our physics engine
+        self.physics_engine.update()
+
+    def on_key_press(self, key, modifiers):
+        """Called whenever a key is pressed."""
+
+        if key == arcade.key.UP or key == arcade.key.W:
+            self.player_sprite.change_y = PLAYER_MOVEMENT_SPEED
+        elif key == arcade.key.DOWN or key == arcade.key.S:
+            self.player_sprite.change_y = -PLAYER_MOVEMENT_SPEED
+        elif key == arcade.key.LEFT or key == arcade.key.A:
+            self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
+        elif key == arcade.key.RIGHT or key == arcade.key.D:
+            self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
+
+    def on_key_release(self, key, modifiers):
+        """Called whenever a key is released."""
+
+        if key == arcade.key.UP or key == arcade.key.W:
+            self.player_sprite.change_y = 0
+        elif key == arcade.key.DOWN or key == arcade.key.S:
+            self.player_sprite.change_y = 0
+        elif key == arcade.key.LEFT or key == arcade.key.A:
+            self.player_sprite.change_x = 0
+        elif key == arcade.key.RIGHT or key == arcade.key.D:
+            self.player_sprite.change_x = 0
 
 
 def main():
@@ -32,34 +130,5 @@ def main():
     arcade.run()
 
 
-
-
-
-
-
-# def choose_title(cell: int):
-#     title = 0
-#     title += cell & 1
-#     title += cell & 2
-#     title += cell & 4
-#     title += cell & 8
-#     return cell
-
-
-# def maze_builder(maze: List[List[int]]) -> arcade.SpriteList:
-#     wall_sprites = {i: arcade.Sprite(f"assets/Wall_sprites/wall_{i}.png") for i in range(15)}
-#     wall_list = arcade.SpriteList()
-#     center_y = 16
-#     for y in range(len(maze)):
-#         center_x = 16
-#         print(y)
-#         for x in range(len(maze[y])):
-#             title = choose_title(maze[y][x])
-#             wall = wall_sprites[title]
-#             wall.center_x = center_x
-#             wall.center_y = center_y
-#             print(wall.center_)
-#             wall_list.append(wall)
-#     center_x += 16
-#     center_y += 16
-#     return wall_list 
+if __name__ == "__main__":
+    main()
