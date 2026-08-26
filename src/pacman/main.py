@@ -17,4 +17,5 @@ if __name__ == "__main__":
     )
 
     maze.generate()
+    print(maze.maze)
     run_game(maze.maze)
