@@ -16,8 +16,11 @@ def calcul_mask(cell: int):
     return mask
 
 
-def build_maze(maze: list[list[int]], width: int, height: int):
-    tiles_sprites = {i:f"assets/wall_sprites/wall_{i}.png" for i in range(16)}
+def build_maze(maze: list[list[int]],
+               width: int,
+               height: int,
+               y_offset: int = 0):
+    tiles_sprites = {i: f"assets/wall_sprites/wall_{i}.png" for i in range(16)}
     tiles_list = arcade.SpriteList()
 
     maze_height = len(maze)
@@ -36,8 +39,8 @@ def build_maze(maze: list[list[int]], width: int, height: int):
             tile.width = tile_w
             tile.height = tile_h
 
-            tile.center_x = (tile_w * x) + (tile_w // 2) + PAD_X1
-            tile.center_y = ((maze_height - 1 - y) * tile_h) + (tile_h / 2) + PAD_Y1
+            tile.center_x = (tile_w * x) + (tile_w / 2) + PAD_X1
+            tile.center_y = ((maze_height - 1 - y) * tile_h) + (tile_h / 2) + PAD_Y1 + y_offset
 
             tiles_list.append(tile)
 
