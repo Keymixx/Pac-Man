@@ -9,13 +9,22 @@ if __name__ == "__main__":
         config: ConfigFile = config_loader(sys.argv[1])
         print(config)
     except Exception as e:
-        print(e)
+        print(f"Error loading config: {e}")
+        sys.exit(1)
 
-    maze = MazeGenerator(
-        size=(config.levels[0].width, config.levels[0].height),
-        perfect=False
-    )
+    try:
+        maze = MazeGenerator(
+            size=(config.levels[0].width, config.levels[0].height),
+            perfect=False
+        )
+        maze.generate()
+        print(maze.maze)
+    except Exception as e:
+        print(f"Error generating maze: {e}")
+        sys.exit(1)
 
-    maze.generate()
-    print(maze.maze)
-    run_game(maze.maze)
+    try:
+        run_game(maze.maze, config)
+    except KeyboardInterrupt:
+        print("\nGame interrupted by user.")
+        sys.exit(0)

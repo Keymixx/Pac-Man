@@ -6,6 +6,7 @@ class LevelStructure(BaseModel):
     name: str=Field(min_length=1)
     width: int=Field(gt=2)
     height: int=Field(gt=2)
+    level_max_time: int = Field(default=90, gt=0)
 
 
 class ConfigFile(BaseModel):
