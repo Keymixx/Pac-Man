@@ -1,15 +1,18 @@
 import arcade
 from .maze.maze_builder import build_maze
 from .models.config import ConfigFile
+# from .entities.player import Player
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 800
 WINDOW_TITLE = "Pac-Man"
 MAZE_COLOR = arcade.csscolor.BLACK
 
+PADS = (20, 20, 20, 20)
 HUD_HEIGHT = 60
 BORDER_THICKNESS = 1
 HUD_BORDER_COLOR = (25, 60, 150)
+PAD = (20,20,20,20)
 MAZE_AREA_HEIGHT = WINDOW_HEIGHT - HUD_HEIGHT
 
 
@@ -20,8 +23,8 @@ class GameView(arcade.Window):
         self.maze = maze
         self.game_config = config
         self.background_color = MAZE_COLOR
-        self.tiles_list = build_maze(
-            self.maze, WINDOW_WIDTH, MAZE_AREA_HEIGHT, y_offset=HUD_HEIGHT
+        self.tiles_list, self.tile_h, self.tile_w = build_maze(
+            self.maze, WINDOW_WIDTH, MAZE_AREA_HEIGHT, y_offset=HUD_HEIGHT, pads= PADS
         )
 
         self.hud_border = arcade.SpriteSolidColor(
@@ -41,7 +44,7 @@ class GameView(arcade.Window):
         self.hud_sprite_list.append(self.hud_background)
 
         self.current_level_index = 0
-        self.score = 0
+        self.score = 0 
         self.lives = config.lives
         self.level = self.current_level_index + 1
         self.time_remaining = \
@@ -68,6 +71,7 @@ class GameView(arcade.Window):
             arcade.color.WHITE, 16, anchor_y="center"
         )
 
+        # self.player = Player(start_col=1, start_row=1, tile_size=self.tile_w)
     def setup(self):
         """Set up the game here. Call this function to restart the game."""
         pass
@@ -88,6 +92,7 @@ class GameView(arcade.Window):
         self.time_text.text = f"Time: {int(self.time_remaining)}"
 
     def on_update(self, delta_time: float):
+        # self.player.update_position()
         self.time_remaining = max(0, self.time_remaining - delta_time)
         self.update_hud()
 

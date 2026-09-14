@@ -1,11 +1,6 @@
 import arcade
 
 N, E, S, W = 1, 2, 4, 8
-PAD_X1 = 20
-PAD_Y1 = 20
-PAD_X2 = 20
-PAD_Y2 = 20
-
 
 def calcul_mask(cell: int):
     mask = 0
@@ -19,7 +14,10 @@ def calcul_mask(cell: int):
 def build_maze(maze: list[list[int]],
                width: int,
                height: int,
-               y_offset: int = 0):
+               y_offset: int = 0,
+               pads: tuple = (20, 20, 20, 20)):
+
+    PAD_X1, PAD_Y1, PAD_X2, PAD_Y2 = pads
     tiles_sprites = {i: f"assets/wall_sprites/wall_{i}.png" for i in range(16)}
     tiles_list = arcade.SpriteList()
 
@@ -44,4 +42,4 @@ def build_maze(maze: list[list[int]],
 
             tiles_list.append(tile)
 
-    return tiles_list
+    return tiles_list, tile_h, tile_w

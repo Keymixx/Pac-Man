@@ -7,7 +7,6 @@ from mazegenerator import MazeGenerator
 if __name__ == "__main__":
     try:
         config: ConfigFile = config_loader(sys.argv[1])
-        print(config)
     except Exception as e:
         print(f"Error loading config: {e}")
         sys.exit(1)
@@ -18,7 +17,6 @@ if __name__ == "__main__":
             perfect=False
         )
         maze.generate()
-        print(maze.maze)
     except Exception as e:
         print(f"Error generating maze: {e}")
         sys.exit(1)
