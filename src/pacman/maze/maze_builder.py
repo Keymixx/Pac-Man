@@ -24,22 +24,23 @@ def build_maze(maze: list[list[int]],
     maze_height = len(maze)
     maze_width = len(maze[0])
 
+
     tile_h = (height - (PAD_Y1 + PAD_Y2)) / maze_height
     tile_w = (width - (PAD_X1 + PAD_X2)) / maze_width
-    print(tile_h)
-    print(tile_w)
+
+    tile_size = int(min(tile_w, tile_h))
 
     for y, row in enumerate(maze):
         for x, v in enumerate(row):
             mask = calcul_mask(v)
             tile = arcade.Sprite(tiles_sprites[mask])
 
-            tile.width = tile_w
-            tile.height = tile_h
+            tile.width = tile_size
+            tile.height = tile_size
 
-            tile.center_x = (tile_w * x) + (tile_w / 2) + PAD_X1
-            tile.center_y = ((maze_height - 1 - y) * tile_h) + (tile_h / 2) + PAD_Y1 + y_offset
+            tile.center_x = (tile_size * x) + (tile_size / 2) + PAD_X1
+            tile.center_y = (tile_size * (maze_height - 1 - y)) + (tile_size / 2) + PAD_Y1 + y_offset
 
             tiles_list.append(tile)
 
-    return tiles_list, tile_h, tile_w
+    return tiles_list, tile_size

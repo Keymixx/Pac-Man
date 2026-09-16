@@ -23,7 +23,7 @@ class GameView(arcade.Window):
         self.maze = maze
         self.game_config = config
         self.background_color = MAZE_COLOR
-        self.tiles_list, self.tile_h, self.tile_w = build_maze(
+        self.tiles_list, self.tile_size = build_maze(
             self.maze, WINDOW_WIDTH, MAZE_AREA_HEIGHT, y_offset=HUD_HEIGHT, pads= PADS
         )
 

@@ -1,3 +1,4 @@
-pads = (1, 2, 3, 4)
+a = 54
+b = 24
 
-print()
+print(max(a,b))
