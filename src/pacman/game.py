@@ -24,7 +24,7 @@ class GameView(arcade.Window):
         self.game_config = config
         self.background_color = MAZE_COLOR
         self.tiles_list, self.tile_size = build_maze(
-            self.maze, WINDOW_WIDTH, MAZE_AREA_HEIGHT, y_offset=HUD_HEIGHT, pads= PADS
+            self.maze, WINDOW_WIDTH, MAZE_AREA_HEIGHT, height_hud=HUD_HEIGHT
         )
 
         self.hud_border = arcade.SpriteSolidColor(

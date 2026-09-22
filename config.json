@@ -8,8 +8,8 @@
     "levels": [
         {
             "name": "level_1",
-            "width": 32,
-            "height": 16,
+            "width": 10,
+            "height": 10,
             "level_max_time": 120
         },
         {

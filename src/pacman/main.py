@@ -22,6 +22,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     try:
+        print(maze.maze)
         run_game(maze.maze, config)
     except KeyboardInterrupt:
         print("\nGame interrupted by user.")

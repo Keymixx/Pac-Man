@@ -2,44 +2,31 @@ import arcade
 
 N, E, S, W = 1, 2, 4, 8
 
-def calcul_mask(cell: int):
-    mask = 0
-    mask += cell & N
-    mask += cell & E
-    mask += cell & S
-    mask += cell & W
-    return mask
-
-
 def build_maze(maze: list[list[int]],
                width: int,
                height: int,
-               y_offset: int = 0,
-               pads: tuple = (20, 20, 20, 20)):
+               height_hud: int):
 
-    PAD_X1, PAD_Y1, PAD_X2, PAD_Y2 = pads
     tiles_sprites = {i: f"assets/wall_sprites/wall_{i}.png" for i in range(16)}
     tiles_list = arcade.SpriteList()
 
     maze_height = len(maze)
     maze_width = len(maze[0])
 
-
-    tile_h = (height - (PAD_Y1 + PAD_Y2)) / maze_height
-    tile_w = (width - (PAD_X1 + PAD_X2)) / maze_width
-
-    tile_size = int(min(tile_w, tile_h))
+    tile_size = int(min((height) / maze_height, (width) / maze_width))
 
     for y, row in enumerate(maze):
         for x, v in enumerate(row):
-            mask = calcul_mask(v)
-            tile = arcade.Sprite(tiles_sprites[mask])
+            tile = arcade.Sprite(tiles_sprites[v])
 
-            tile.width = tile_size
+            tile.width = tile_size 
             tile.height = tile_size
 
-            tile.center_x = (tile_size * x) + (tile_size / 2) + PAD_X1
-            tile.center_y = (tile_size * (maze_height - 1 - y)) + (tile_size / 2) + PAD_Y1 + y_offset
+            offset_x = (width - (maze_width * tile_size)) / 2
+            offset_y = height_hud + (height - (maze_height * tile_size)) / 2
+
+            tile.center_x = offset_x + (tile_size * x) + (tile_size / 2)
+            tile.center_y = (tile_size * (maze_height - 1 - y)) + (tile_size / 2) + offset_y
 
             tiles_list.append(tile)
 
