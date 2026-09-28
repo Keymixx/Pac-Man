@@ -1,7 +1,7 @@
 import arcade
 from .maze.maze_builder import build_maze
 from .models.config import ConfigFile
-# from .entities.player import Player
+from .entities.player import Player
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 800
@@ -71,7 +71,14 @@ class GameView(arcade.Window):
             arcade.color.WHITE, 16, anchor_y="center"
         )
 
-        # self.player = Player(start_col=1, start_row=1, tile_size=self.tile_w)
+        self.player = Player(start_col=3, start_row=3,
+                             tile_size=self.tile_size, maze=self.maze)
+        self.player_list = arcade.SpriteList()
+        self.player_sprite = arcade.Sprite("assets/pacman_sprites/pacman_up_closed.png")
+        self.player_sprite.width = self.tile_size
+        self.player_sprite.height = self.tile_size
+        self.player_list.append(self.player_sprite)
+
     def setup(self):
         """Set up the game here. Call this function to restart the game."""
         pass
@@ -92,7 +99,7 @@ class GameView(arcade.Window):
         self.time_text.text = f"Time: {int(self.time_remaining)}"
 
     def on_update(self, delta_time: float):
-        # self.player.update_position()
+        self.player.update_position()
         self.time_remaining = max(0, self.time_remaining - delta_time)
         self.update_hud()
 
@@ -100,8 +107,12 @@ class GameView(arcade.Window):
         """Render the screen."""
         self.clear()
 
+        self.player_sprite.center_x = self.player.center_x
+        self.player_sprite.center_y = self.player.center_y
+
         self.tiles_list.draw()
         self.hud_sprite_list.draw()
+        self.player_list.draw()
 
         self.score_text.draw()
         self.lives_text.draw()
@@ -112,8 +123,16 @@ class GameView(arcade.Window):
         """Called whenever a key on the keyboard is pressed."""
         if key == arcade.key.F11:
             self.set_fullscreen(not self.fullscreen)
-        if key == arcade.key.ESCAPE:
+        elif key == arcade.key.ESCAPE:
             arcade.close_window()
+        elif key == arcade.key.UP:
+            self.player.next_direction = (1, 0)
+        elif key == arcade.key.DOWN:
+            self.player.next_direction = (-1, 0)
+        elif key == arcade.key.RIGHT:
+            self.player.next_direction = (0, 1)
+        elif key == arcade.key.LEFT:
+            self.player.next_direction = (0, -1)
 
 
 def run_game(maze: list[list[int]], config: ConfigFile):
