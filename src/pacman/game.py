@@ -23,7 +23,7 @@ class GameView(arcade.Window):
         self.maze = maze
         self.game_config = config
         self.background_color = MAZE_COLOR
-        self.tiles_list, self.tile_size = build_maze(
+        self.tiles_list, self.tile_size, self.offset_y, self.offset_x = build_maze(
             self.maze, WINDOW_WIDTH, MAZE_AREA_HEIGHT, height_hud=HUD_HEIGHT
         )
 
@@ -75,8 +75,8 @@ class GameView(arcade.Window):
                              tile_size=self.tile_size, maze=self.maze)
         self.player_list = arcade.SpriteList()
         self.player_sprite = arcade.Sprite("assets/pacman_sprites/pacman_up_closed.png")
-        self.player_sprite.width = self.tile_size
-        self.player_sprite.height = self.tile_size
+        self.player_sprite.width = self.tile_size * 0.7
+        self.player_sprite.height = self.tile_size * 0.7
         self.player_list.append(self.player_sprite)
 
     def setup(self):
@@ -107,8 +107,8 @@ class GameView(arcade.Window):
         """Render the screen."""
         self.clear()
 
-        self.player_sprite.center_x = self.player.center_x
-        self.player_sprite.center_y = self.player.center_y
+        self.player_sprite.center_x = self.player.center_x + self.offset_x
+        self.player_sprite.center_y = self.player.center_y + self.offset_y
 
         self.tiles_list.draw()
         self.hud_sprite_list.draw()

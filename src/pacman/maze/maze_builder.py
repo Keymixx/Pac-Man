@@ -30,4 +30,4 @@ def build_maze(maze: list[list[int]],
 
             tiles_list.append(tile)
 
-    return tiles_list, tile_size
+    return tiles_list, tile_size, offset_y, offset_x

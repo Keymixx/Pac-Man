@@ -10,8 +10,8 @@ class Player:
         self.center_y = start_row * tile_size + (tile_size // 2)
         self.speed = 0.5
         self.direction = (1, 0)
-        self.next_direction = (0, 0)
-        self.maze = maze
+        self.next_direction = (1, 0)
+        self.maze = maze[::-1]
 
     def row_col(self) -> tuple:
         row = int(self.center_y // self.tile_size)
@@ -48,25 +48,39 @@ class Player:
 
     def update_direction(self):
         row, col = self.row_col()
-        print(row, col)
         cell = self.maze[row][col]
-        dy, dx = self.next_direction
+        ndy, ndx = self.next_direction
+        dy, dx = self.direction
 
-        if (dy > 0 and cell & N) or \
-            (dy < 0 and cell & S) or \
-                (dx > 0 and cell & E) or \
-                (dx < 0 and cell & W):
+        if (ndy > 0 and not cell & N) or \
+            (ndy < 0 and not cell & S) or \
+                (ndx > 0 and not cell & E) or \
+                (ndx < 0 and not cell & W):
 
             self.direction = self.next_direction
+        
+        elif dy == 1 and not cell & N:
+            pass
+        elif dy == -1 and not cell & S:
+            pass
+        elif dx == 1 and not cell & E:
+            pass
+        elif dx == -1 and not cell & W:
+            pass
+
+        else:
+            self.direction = (0, 0)
+
 
     def update_position(self):
         row, col = self.row_col()
         cy, cx = self.axis_center(row, col)
         dy, dx = self.direction
+        cell = self.maze[row][col]
 
-        if self.will_cross_axis():
-            self.center_y = cy + dy
-            self.center_x = cx + dx
+        if self.will_cross_axis() or self.direction == (0,0):
+            self.center_y = cy 
+            self.center_x = cx 
             self.update_direction()
 
         self.move()
