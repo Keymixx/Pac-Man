@@ -2,17 +2,16 @@ import arcade
 from .maze.maze_builder import build_maze
 from .models.config import ConfigFile
 from .entities.player import Player
+from .entities.pacgum import PacgumList
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 800
 WINDOW_TITLE = "Pac-Man"
 MAZE_COLOR = arcade.csscolor.BLACK
 
-PADS = (20, 20, 20, 20)
 HUD_HEIGHT = 60
 BORDER_THICKNESS = 1
 HUD_BORDER_COLOR = (25, 60, 150)
-PAD = (20,20,20,20)
 MAZE_AREA_HEIGHT = WINDOW_HEIGHT - HUD_HEIGHT
 
 
@@ -50,6 +49,8 @@ class GameView(arcade.Window):
         self.time_remaining = \
             config.levels[self.current_level_index].level_max_time
 
+        self.pacgum_list = PacgumList()
+        self.pacgum_list.init_pacgum(self.maze, config.pacgum)
         self.points_per_pacgum = config.points_per_pacgum
         self.points_per_super_pacgum = config.points_per_super_pacgum
         self.points_per_ghost = config.points_per_ghost
@@ -79,6 +80,9 @@ class GameView(arcade.Window):
         self.player_sprite.height = self.tile_size * 0.7
         self.player_list.append(self.player_sprite)
 
+
+
+
     def setup(self):
         """Set up the game here. Call this function to restart the game."""
         pass
@@ -107,6 +111,7 @@ class GameView(arcade.Window):
         """Render the screen."""
         self.clear()
 
+        self.pacgum_list.show_pacgum().draw()
         self.player_sprite.center_x = self.player.center_x + self.offset_x
         self.player_sprite.center_y = self.player.center_y + self.offset_y
 
@@ -118,6 +123,8 @@ class GameView(arcade.Window):
         self.lives_text.draw()
         self.level_text.draw()
         self.time_text.draw()
+        print(self.offset_y)
+        print(self.offset_x)
 
     def on_key_press(self, key, key_modifiers):
         """Called whenever a key on the keyboard is pressed."""
