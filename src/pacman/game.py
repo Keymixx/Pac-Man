@@ -50,7 +50,7 @@ class GameView(arcade.Window):
             config.levels[self.current_level_index].level_max_time
 
         self.pacgum_list = PacgumList()
-        self.pacgum_list.init_pacgum(self.maze, config.pacgum)
+        self.pacgum_list.init_pacgum(self.maze, config.pacgum, self.tile_size, self.offset_y, self.offset_x)
         self.points_per_pacgum = config.points_per_pacgum
         self.points_per_super_pacgum = config.points_per_super_pacgum
         self.points_per_ghost = config.points_per_ghost
@@ -104,6 +104,7 @@ class GameView(arcade.Window):
 
     def on_update(self, delta_time: float):
         self.player.update_position()
+        self.pacgum_list.pacgum_eated(self.player_sprite.width, self.player.center_y, self.player.center_x)
         self.time_remaining = max(0, self.time_remaining - delta_time)
         self.update_hud()
 
@@ -123,8 +124,6 @@ class GameView(arcade.Window):
         self.lives_text.draw()
         self.level_text.draw()
         self.time_text.draw()
-        print(self.offset_y)
-        print(self.offset_x)
 
     def on_key_press(self, key, key_modifiers):
         """Called whenever a key on the keyboard is pressed."""
