@@ -49,8 +49,8 @@ class GameView(arcade.Window):
         self.time_remaining = \
             config.levels[self.current_level_index].level_max_time
 
-        self.pacgum_list = PacgumList()
-        self.pacgum_list.init_pacgum(self.maze, config.pacgum, self.tile_size, self.offset_y, self.offset_x)
+        self.pacgum_list = PacgumList(config.pacgum, self.maze)
+        self.pacgum_list.init_pacgum(self.tile_size, self.offset_y, self.offset_x)
         self.points_per_pacgum = config.points_per_pacgum
         self.points_per_super_pacgum = config.points_per_super_pacgum
         self.points_per_ghost = config.points_per_ghost

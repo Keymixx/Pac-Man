@@ -5,11 +5,13 @@ from typing import Tuple, List
 
 
 class PacgumList:
-    def __init__(self):
+    def __init__(self, nb_pacgum: int, maze: list[list[int]]):
         self.pacgum_list: list[Pacgum] = []
+        self.nb_pacgum = nb_pacgum
+        self.maze = maze
 
-    def generate_sample(self, maze: list[list[int]], nb_pacgum: int) -> List[tuple[int, int]]:
-        maze = maze[::-1]
+    def generate_sample(self) -> List[tuple[int, int]]:
+        maze = self.maze[::-1]
         y = 0
         x = 0
         valid_cell: list[tuple[int, int]] = []
@@ -21,12 +23,11 @@ class PacgumList:
             y += 1
             x = 0
 
-        sample = random.sample(valid_cell, nb_pacgum)
+        sample = random.sample(valid_cell, self.nb_pacgum)
         return sample
 
-    def init_pacgum(self, maze: list[list[int]], nb_pacgum: int,
-                    tile_size: int, offset_y: int, offset_x: int):
-        sample = self.generate_sample(maze, nb_pacgum)
+    def init_pacgum(self, tile_size: int, offset_y: int, offset_x: int):
+        sample = self.generate_sample()
         for coord in sample:
             self.pacgum_list.append(Pacgum(coord, tile_size, offset_y, offset_x))
 
@@ -45,6 +46,7 @@ class PacgumList:
                 print(pacgum_coord, player_coord)
                 if math.dist(pacgum_coord, player_coord) < (pacgum.sprite.width + player_size) / 2:
                     pacgum.eated = True
+                    self.nb_pacgum -= 1
                     print("eated")
 
 
