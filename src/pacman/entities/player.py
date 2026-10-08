@@ -8,7 +8,7 @@ class Player:
         self.tile_size = tile_size
         self.center_x = start_col * tile_size + (tile_size // 2)
         self.center_y = start_row * tile_size + (tile_size // 2)
-        self.speed = 0.5
+        self.speed = tile_size * 0.04
         self.direction = (1, 0)
         self.next_direction = (1, 0)
         self.maze = maze[::-1]

@@ -72,7 +72,7 @@ class GameView(arcade.Window):
             arcade.color.WHITE, 16, anchor_y="center"
         )
 
-        self.player = Player(start_col=3, start_row=3,
+        self.player = Player(start_col=0, start_row=0,
                              tile_size=self.tile_size, maze=self.maze)
         self.player_list = arcade.SpriteList()
         self.player_sprite = arcade.Sprite("assets/pacman_sprites/pacman_up_closed.png")
@@ -107,6 +107,7 @@ class GameView(arcade.Window):
         self.pacgum_list.pacgum_eated(self.player_sprite.width, self.player.center_y, self.player.center_x)
         self.time_remaining = max(0, self.time_remaining - delta_time)
         self.update_hud()
+        print(self.player.row_col())
 
     def on_draw(self):
         """Render the screen."""
