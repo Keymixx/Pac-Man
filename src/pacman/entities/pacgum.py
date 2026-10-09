@@ -43,7 +43,6 @@ class PacgumList:
             if not pacgum.eated:
                 pacgum_coord = [pacgum.coord_y, pacgum.coord_x]
                 player_coord = [player_y, player_x]
-                print(pacgum_coord, player_coord)
                 if math.dist(pacgum_coord, player_coord) < (pacgum.sprite.width + player_size) / 2:
                     pacgum.eated = True
                     self.nb_pacgum -= 1

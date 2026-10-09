@@ -3,6 +3,7 @@ from .maze.maze_builder import build_maze
 from .models.config import ConfigFile
 from .entities.player import Player
 from .entities.pacgum import PacgumList
+from .entities.ghost import Ghost
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 800
@@ -80,6 +81,13 @@ class GameView(arcade.Window):
         self.player_sprite.height = self.tile_size * 0.7
         self.player_list.append(self.player_sprite)
 
+        self.ghost = Ghost(15, 15, self.tile_size, self.maze)
+        self.ghost_list = arcade.SpriteList()
+        self.ghost_sprite = arcade.Sprite("assets/pacman_sprites/pacman_right_open.png")
+        self.ghost_sprite.width = self.tile_size * 0.6
+        self.ghost_sprite.height = self.tile_size * 0.6
+        self.ghost_list.append(self.ghost_sprite)
+
 
 
 
@@ -106,8 +114,9 @@ class GameView(arcade.Window):
         self.player.update_position()
         self.pacgum_list.pacgum_eated(self.player_sprite.width, self.player.center_y, self.player.center_x)
         self.time_remaining = max(0, self.time_remaining - delta_time)
+        self.ghost.get_next_direction(self.player.row_col())
+        self.ghost.update_position()
         self.update_hud()
-        print(self.player.row_col())
 
     def on_draw(self):
         """Render the screen."""
@@ -116,10 +125,14 @@ class GameView(arcade.Window):
         self.pacgum_list.show_pacgum().draw()
         self.player_sprite.center_x = self.player.center_x + self.offset_x
         self.player_sprite.center_y = self.player.center_y + self.offset_y
+        self.ghost_sprite.center_x = self.ghost.center_x + self.offset_x
+        self.ghost_sprite.center_y = self.ghost.center_y + self.offset_y
+
 
         self.tiles_list.draw()
         self.hud_sprite_list.draw()
         self.player_list.draw()
+        self.ghost_list.draw()
 
         self.score_text.draw()
         self.lives_text.draw()
