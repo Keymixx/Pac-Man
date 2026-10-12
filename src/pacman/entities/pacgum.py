@@ -2,6 +2,7 @@ import random
 import arcade
 import math
 from typing import Tuple, List
+from .player import Player
 
 
 class PacgumList:
@@ -38,12 +39,15 @@ class PacgumList:
                 sprite_list.append(pacgum.sprite)
         return sprite_list
 
-    def pacgum_eated(self, player_size: int, player_y: int, player_x: int):
+    def pacgum_eated(self, player: Player):
+        player_y, player_x = player.row_col()
+        print(player_y, player_x)
+
         for pacgum in self.pacgum_list:
             if not pacgum.eated:
                 pacgum_coord = [pacgum.coord_y, pacgum.coord_x]
                 player_coord = [player_y, player_x]
-                if math.dist(pacgum_coord, player_coord) < (pacgum.sprite.width + player_size) / 2:
+                if math.dist(pacgum_coord, player_coord) < (pacgum.sprite.width + player.size) / 2:
                     pacgum.eated = True
                     self.nb_pacgum -= 1
                     print("eated")
@@ -54,7 +58,7 @@ class Pacgum:
         y, x = coord
         self.y = y
         self.x = x
-    
+
         self.eated = False
         self.sprite = arcade.Sprite("assets/pacman_sprites/pacman_down_closed.png")
 

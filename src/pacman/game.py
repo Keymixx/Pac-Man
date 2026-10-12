@@ -77,13 +77,13 @@ class GameView(arcade.Window):
                              tile_size=self.tile_size, maze=self.maze)
         self.player_list = arcade.SpriteList()
         self.player_sprite = arcade.Sprite("assets/pacman_sprites/pacman_up_closed.png")
-        self.player_sprite.width = self.tile_size * 0.7
-        self.player_sprite.height = self.tile_size * 0.7
+        self.player_sprite.width = self.player.size
+        self.player_sprite.height = self.player.size
         self.player_list.append(self.player_sprite)
 
         self.ghost = Ghost(15, 15, self.tile_size, self.maze)
         self.ghost_list = arcade.SpriteList()
-        self.ghost_sprite = arcade.Sprite("assets/pacman_sprites/pacman_right_open.png")
+        self.ghost_sprite = arcade.Sprite("assets/ghost_sprites/blinky/sprite-6-1.png")
         self.ghost_sprite.width = self.tile_size * 0.6
         self.ghost_sprite.height = self.tile_size * 0.6
         self.ghost_list.append(self.ghost_sprite)
@@ -112,7 +112,7 @@ class GameView(arcade.Window):
 
     def on_update(self, delta_time: float):
         self.player.update_position()
-        self.pacgum_list.pacgum_eated(self.player_sprite.width, self.player.center_y, self.player.center_x)
+        self.pacgum_list.pacgum_eated(self.player)
         self.time_remaining = max(0, self.time_remaining - delta_time)
         self.ghost.get_next_direction(self.player.row_col())
         self.ghost.update_position()

@@ -4,19 +4,24 @@ N, E, S, W = 1, 2, 4, 8
 
 
 class Player:
-    def __init__(self, start_col, start_row, tile_size, maze: list[list[int]]):
+    def __init__(self, start_col, start_row, tile_size, maze: list[list[int]], offset_y: int, offset_x: int):
         self.tile_size = tile_size
-        self.center_x = start_col * tile_size + (tile_size // 2)
-        self.center_y = start_row * tile_size + (tile_size // 2)
+        self.center_y = start_row * tile_size + (tile_size // 2) + offset_y
+        self.center_x = start_col * tile_size + (tile_size // 2) + offset_x
+        self.size = tile_size * 0.7
         self.speed = tile_size * 0.04
         self.direction = (1, 0)
         self.next_direction = (1, 0)
-        self.maze = maze[::-1]
+        self.maze = maze[::-1] 
+        
+        self.center_y_rl = start_row * tile_size + (tile_size // 2) + offset_y
+        self.center_x_rl = start_col * tile_size + (tile_size // 2) + offset_x
 
     def row_col(self) -> tuple:
         row = int(self.center_y // self.tile_size)
         col = int(self.center_x // self.tile_size)
         return row, col
+
 
     def axis_center(self, row, col):
         cy = row * self.tile_size + (self.tile_size // 2)

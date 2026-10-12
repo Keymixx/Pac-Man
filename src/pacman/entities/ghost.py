@@ -82,7 +82,6 @@ class Ghost:
         history = self.bfs(player_pos)
         path = self.get_path(history, player_pos)
         self.next_direction = self.get_direction(path[0])
-        print(self.next_direction)
 
     def will_cross_axis(self):
         row, col = self.row_col()
