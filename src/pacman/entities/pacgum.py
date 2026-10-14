@@ -6,65 +6,79 @@ from .player import Player
 
 
 class PacgumList:
-    def __init__(self, nb_pacgum: int, maze: list[list[int]]):
+    def __init__(self, nb_pacgum: int, supergum_point: int,
+                 gum_point: int, maze: list[list[int]]):
         self.pacgum_list: list[Pacgum] = []
         self.nb_pacgum = nb_pacgum
+        self.supergum_point = supergum_point
+        self.gum_point = gum_point
+
         self.maze = maze
+
+        self.sprite_list = arcade.SpriteList()
 
     def generate_sample(self) -> List[tuple[int, int]]:
         maze = self.maze[::-1]
         y = 0
         x = 0
+        y_max = len(maze) - 1
+        x_max = len(maze[0]) - 1
         valid_cell: list[tuple[int, int]] = []
+
+        corners = {(0, 0), (0, x_max), (y_max, 0), (y_max, x_max)}
         for row in maze:
             for cell in row:
-                if cell != 15:
+                if (y, x) not in corners and cell != 15:
                     valid_cell.append((y, x))
                 x += 1
             y += 1
             x = 0
-
         sample = random.sample(valid_cell, self.nb_pacgum)
         return sample
 
-    def init_pacgum(self, tile_size: int, offset_y: int, offset_x: int):
+    def init_pacgum(self, tile_size: int):
         sample = self.generate_sample()
         for coord in sample:
-            self.pacgum_list.append(Pacgum(coord, tile_size, offset_y, offset_x))
+            new_pacgum = Pacgum(coord, tile_size)
+            self.pacgum_list.append(new_pacgum)
+            self.sprite_list.append(new_pacgum.sprite)
 
-    def show_pacgum(self):
-        sprite_list = arcade.SpriteList()
+    def show_pacgum(self, offset_y: int, offset_x: int):
         for pacgum in self.pacgum_list:
             if not pacgum.eated:
-                sprite_list.append(pacgum.sprite)
-        return sprite_list
+                pacgum.sprite.center_y = pacgum.coord_y + offset_y
+                pacgum.sprite.center_x = pacgum.coord_x + offset_x
+        return self.sprite_list
 
     def pacgum_eated(self, player: Player):
         player_y, player_x = player.row_col()
-        print(player_y, player_x)
 
         for pacgum in self.pacgum_list:
             if not pacgum.eated:
                 pacgum_coord = [pacgum.coord_y, pacgum.coord_x]
-                player_coord = [player_y, player_x]
+                player_coord = [player.center_y, player.center_x]
+
                 if math.dist(pacgum_coord, player_coord) < (pacgum.sprite.width + player.size) / 2:
                     pacgum.eated = True
-                    self.nb_pacgum -= 1
-                    print("eated")
+                    pacgum.sprite.remove_from_sprite_lists()
+                    if pacgum.super_gum:
+                        player.super = True
+                        return self.supergum_point
+                    else:
+                        return self.gum_point
+        return 0
 
 
 class Pacgum:
-    def __init__(self, coord: tuple, tile_size: int, offset_y: int, offset_x: int):
+    def __init__(self, coord: tuple, tile_size: int):
         y, x = coord
         self.y = y
         self.x = x
 
         self.eated = False
+        self.super_gum = False 
         self.sprite = arcade.Sprite("assets/pacman_sprites/pacman_down_closed.png")
-
-        self.sprite.center_x = x * tile_size + (tile_size // 2) + offset_x
-        self.sprite.center_y = y * tile_size + (tile_size // 2) + offset_y
 
         self.coord_y = y * tile_size + (tile_size // 2)
         self.coord_x = x * tile_size + (tile_size // 2)
-        self.sprite.scale = (tile_size / self.sprite.width) * 0.4
+        self.sprite.scale = tile_size * 0.005
