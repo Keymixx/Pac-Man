@@ -8,10 +8,13 @@ from .player import Player
 class PacgumList:
     def __init__(self, nb_pacgum: int, supergum_point: int,
                  gum_point: int, maze: list[list[int]]):
-        self.pacgum_list: list[Pacgum] = []
         self.nb_pacgum = nb_pacgum
         self.supergum_point = supergum_point
         self.gum_point = gum_point
+
+        self.pacgum_list: list[Pacgum] = []
+        self.pacgums = list[tuple[int, int]]
+        self.super_pacgums = list[tuple[int, int]]
 
         self.maze = maze
 
@@ -19,20 +22,16 @@ class PacgumList:
 
     def generate_sample(self) -> List[tuple[int, int]]:
         maze = self.maze[::-1]
-        y = 0
-        x = 0
+        valid_cell: list[tuple[int, int]] = []
         y_max = len(maze) - 1
         x_max = len(maze[0]) - 1
-        valid_cell: list[tuple[int, int]] = []
 
         corners = {(0, 0), (0, x_max), (y_max, 0), (y_max, x_max)}
-        for row in maze:
-            for cell in row:
+        for y, row in enumerate(maze):
+            for x, cell in enumerate(row):
                 if (y, x) not in corners and cell != 15:
                     valid_cell.append((y, x))
-                x += 1
-            y += 1
-            x = 0
+
         sample = random.sample(valid_cell, self.nb_pacgum)
         return sample
 
@@ -42,6 +41,14 @@ class PacgumList:
             new_pacgum = Pacgum(coord, tile_size)
             self.pacgum_list.append(new_pacgum)
             self.sprite_list.append(new_pacgum.sprite)
+
+        y_max = len(self.maze) - 1
+        x_max = len(self.maze[0]) - 1
+        corners = {(0, 0), (0, x_max), (y_max, 0), (y_max, x_max)}
+        for coord in corners:
+            super_pacgum = SuperPacgum(coord, tile_size)
+            self.pacgum_list.append(super_pacgum)
+            self.sprite_list.append(super_pacgum.sprite)
 
     def show_pacgum(self, offset_y: int, offset_x: int):
         for pacgum in self.pacgum_list:
@@ -81,4 +88,11 @@ class Pacgum:
 
         self.coord_y = y * tile_size + (tile_size // 2)
         self.coord_x = x * tile_size + (tile_size // 2)
-        self.sprite.scale = tile_size * 0.005
+        self.sprite.scale = tile_size * 0.004
+
+
+class SuperPacgum(Pacgum):
+    def __init__(self, coord, tile_size):
+        super().__init__(coord, tile_size)
+        self.sprite.scale = tile_size * 0.008
+        self.super_gum = True
