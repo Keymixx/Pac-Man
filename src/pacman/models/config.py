@@ -14,12 +14,10 @@ class ConfigFile(BaseModel):
 
     @field_validator('highscore_filename', mode='after')
     @classmethod
-    def valid_file(cls, file_name: str):
-        file_path = Path(file_name)
-        if not file_path.exists():
-            raise FileNotFoundError(f"{file_name} not found")
-        elif not file_path.suffix == ".json":
+    def valid_file(cls, file_name: str) -> str:
+        if Path(file_name).suffix != ".json":
             raise ValueError("Highscore file must be a JSON")
+        return file_name
     lives: int = Field(default=3, gt=0)
     pacgum: int = Field(gt=0)
     points_per_pacgum: int
