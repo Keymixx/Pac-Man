@@ -16,10 +16,10 @@ HUD_BORDER_COLOR = (25, 60, 150)
 MAZE_AREA_HEIGHT = WINDOW_HEIGHT - HUD_HEIGHT
 
 
-class GameView(arcade.Window):
+class GameView(arcade.View):
     def __init__(self, maze: list[list[int]], config: ConfigFile):
 
-        super().__init__(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
+        super().__init__()
         self.game_config = config
         self.background_color = MAZE_COLOR
         self.tiles_list, self.tile_size, self.offset_y, self.offset_x = build_maze(
@@ -91,13 +91,6 @@ class GameView(arcade.Window):
         self.ghost_sprite.height = self.tile_size * 0.6
         self.ghost_list.append(self.ghost_sprite)
 
-
-
-
-    def setup(self):
-        """Set up the game here. Call this function to restart the game."""
-        pass
-
     def add_score(self, points: int) -> None:
         """Increase the score by the given amount of points"""
         self.score += points
@@ -144,7 +137,7 @@ class GameView(arcade.Window):
     def on_key_press(self, key, key_modifiers):
         """Called whenever a key on the keyboard is pressed."""
         if key == arcade.key.F11:
-            self.set_fullscreen(not self.fullscreen)
+            self.window.set_fullscreen(not self.window.fullscreen)
         elif key == arcade.key.ESCAPE:
             arcade.close_window()
         elif key == arcade.key.UP:
@@ -158,6 +151,6 @@ class GameView(arcade.Window):
 
 
 def run_game(maze: list[list[int]], config: ConfigFile):
-    window = GameView(maze, config)
-    window.setup()
+    window = arcade.Window(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
+    window.show_view(GameView(maze, config))
     arcade.run()
