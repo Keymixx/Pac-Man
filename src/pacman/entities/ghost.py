@@ -118,7 +118,7 @@ class Ghost:
                 (ndx < 0 and not cell & W):
 
             self.direction = self.next_direction
-        
+
         elif dy == 1 and not cell & N:
             pass
         elif dy == -1 and not cell & S:
@@ -137,8 +137,8 @@ class Ghost:
         dy, dx = self.direction
 
         if self.will_cross_axis() or self.direction == (0, 0):
-            self.center_y = cy 
-            self.center_x = cx 
+            self.center_y = cy
+            self.center_x = cx
             self.update_direction()
 
         self.move()

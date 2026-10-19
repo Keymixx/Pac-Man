@@ -1,5 +1,3 @@
-import arcade
-
 N, E, S, W = 1, 2, 4, 8
 
 
@@ -14,7 +12,6 @@ class Player:
         self.next_direction = (1, 0)
         self.maze = maze[::-1]
         self.super = False
-
 
     def row_col(self) -> tuple:
         row = int(self.center_y // self.tile_size)

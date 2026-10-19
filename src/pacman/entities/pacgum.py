@@ -13,16 +13,16 @@ class PacgumList:
         self.gum_point = gum_point
 
         self.pacgum_list: list[Pacgum] = []
-        self.pacgums = list[tuple[int, int]]
-        self.super_pacgums = list[tuple[int, int]]
+        self.pacgums = list[Tuple[int, int]]
+        self.super_pacgums = list[Tuple[int, int]]
 
         self.maze = maze
 
         self.sprite_list = arcade.SpriteList()
 
-    def generate_sample(self) -> List[tuple[int, int]]:
+    def generate_sample(self) -> List[Tuple[int, int]]:
         maze = self.maze[::-1]
-        valid_cell: list[tuple[int, int]] = []
+        valid_cell: list[Tuple[int, int]] = []
         y_max = len(maze) - 1
         x_max = len(maze[0]) - 1
 
@@ -65,7 +65,8 @@ class PacgumList:
                 pacgum_coord = [pacgum.coord_y, pacgum.coord_x]
                 player_coord = [player.center_y, player.center_x]
 
-                if math.dist(pacgum_coord, player_coord) < (pacgum.sprite.width + player.size) / 2:
+                if math.dist(pacgum_coord, player_coord) < \
+                            (pacgum.sprite.width + player.size) / 2:
                     pacgum.eated = True
                     pacgum.sprite.remove_from_sprite_lists()
                     if pacgum.super_gum:
@@ -77,14 +78,15 @@ class PacgumList:
 
 
 class Pacgum:
-    def __init__(self, coord: tuple, tile_size: int):
+    def __init__(self, coord: Tuple, tile_size: int):
         y, x = coord
         self.y = y
         self.x = x
 
         self.eated = False
-        self.super_gum = False 
-        self.sprite = arcade.Sprite("assets/pacman_sprites/pacman_down_closed.png")
+        self.super_gum = False
+        self.sprite = \
+            arcade.Sprite("assets/pacman_sprites/pacman_down_closed.png")
 
         self.coord_y = y * tile_size + (tile_size // 2)
         self.coord_x = x * tile_size + (tile_size // 2)
