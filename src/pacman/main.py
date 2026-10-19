@@ -1,10 +1,17 @@
-from .config_loader import config_loader
-from .models.config import ConfigFile
-from .game import run_game
 import sys
-from mazegenerator import MazeGenerator
+
+import arcade
+
+from .config_loader import config_loader
+from .game import WINDOW_HEIGHT, WINDOW_TITLE, WINDOW_WIDTH
+from .models.config import ConfigFile
+from .views.menu_view import MenuView
 
 if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python3 pac-man.py config.json")
+        sys.exit(1)
+
     try:
         config: ConfigFile = config_loader(sys.argv[1])
     except Exception as e:
@@ -12,17 +19,9 @@ if __name__ == "__main__":
         sys.exit(1)
 
     try:
-        maze = MazeGenerator(
-            size=(config.levels[0].width, config.levels[0].height),
-            perfect=False
-        )
-        maze.generate()
-    except Exception as e:
-        print(f"Error generating maze: {e}")
-        sys.exit(1)
-
-    try:
-        run_game(maze.maze, config)
+        window = arcade.Window(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
+        window.show_view(MenuView(config))
+        arcade.run()
     except KeyboardInterrupt:
         print("\nGame interrupted by user.")
         sys.exit(0)
