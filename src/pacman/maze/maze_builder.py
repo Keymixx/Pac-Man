@@ -2,6 +2,7 @@ import arcade
 
 N, E, S, W = 1, 2, 4, 8
 
+
 def build_maze(maze: list[list[int]],
                width: int,
                height: int,
@@ -26,7 +27,8 @@ def build_maze(maze: list[list[int]],
             offset_y = height_hud + (height - (maze_height * tile_size)) / 2
 
             tile.center_x = offset_x + (tile_size * x) + (tile_size / 2)
-            tile.center_y = (tile_size * (maze_height - 1 - y)) + (tile_size / 2) + offset_y
+            tile.center_y = (tile_size * (maze_height - 1 - y)) + \
+                (tile_size / 2) + offset_y
 
             tiles_list.append(tile)
 
