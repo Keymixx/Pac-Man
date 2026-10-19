@@ -1,11 +1,12 @@
-from pydantic import BaseModel, Field, field_validator, ValidationError
+from pydantic import BaseModel, Field, field_validator
 from pathlib import Path
 from typing import List
 
+
 class LevelStructure(BaseModel):
-    name: str=Field(min_length=1)
-    width: int=Field(gt=2)
-    height: int=Field(gt=2)
+    name: str = Field(min_length=1)
+    width: int = Field(gt=2)
+    height: int = Field(gt=2)
     level_max_time: int = Field(default=90, gt=0)
 
 
