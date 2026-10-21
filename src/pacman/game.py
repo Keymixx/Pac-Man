@@ -21,6 +21,17 @@ class GameView(arcade.View):
     def __init__(self, maze: list[list[int]], config: ConfigFile):
 
         super().__init__()
+
+        self.textures_player = {"up": [], "down": [], "left": [], "right": []}
+        direction = ["up", "down", "left", "right"]
+
+        for d in direction:
+            for i in range(3):
+                texture = arcade.load_texture(f"assets/pacman_sprites/{d}/pacman_{d}_{i}.png")
+                self.textures_player[d].append(texture)
+        
+        
+        
         self.game_config = config
         self.background_color = MAZE_COLOR
 
@@ -93,12 +104,16 @@ class GameView(arcade.View):
         self.pacgum_list.init_pacgum(self.tile_size)
 
         self.player = Player(start_col=3, start_row=3,
-                             tile_size=self.tile_size, maze=maze)
-        self.player_list = arcade.SpriteList()
-        self.player_sprite = arcade.Sprite(
-            "assets/pacman_sprites/pacman_up_closed.png")
+                             tile_size=self.tile_size, maze=maze,
+                             textures=self.textures_player)
+
+        self.player_sprite = arcade.Sprite()
+        self.player_sprite.texture = self.player.texture
         self.player_sprite.width = self.player.size
         self.player_sprite.height = self.player.size
+        
+
+        self.player_list = arcade.SpriteList()
         self.player_list.append(self.player_sprite)
 
         self.ghost = Ghost(15, 15, self.tile_size, maze)
@@ -164,6 +179,7 @@ class GameView(arcade.View):
 
     def on_update(self, delta_time: float):
         self.player.update_position()
+        self.player.update_animation()
         self.score += self.pacgum_list.pacgum_eated(self.player)
 
         if all(p.eated for p in self.pacgum_list.pacgum_list):
@@ -174,12 +190,17 @@ class GameView(arcade.View):
         if not self.ghosts_frozen:
             self.ghost.get_next_direction(self.player.row_col())
             self.ghost.update_position()
-        self.update_hud()
+        
+        if self.ghost.row_col() == self.player.row_col():
+            self.lose_life()
+        
 
     def on_draw(self):
         """Render the screen."""
         self.clear()
         self.tiles_list.draw()
+
+        self.player_sprite.texture = self.player.texture
 
         self.player_sprite.center_x = self.player.center_x + self.offset_x
         self.player_sprite.center_y = self.player.center_y + self.offset_y
@@ -199,6 +220,7 @@ class GameView(arcade.View):
 
     def on_key_press(self, key, key_modifiers):
         """Called whenever a key on the keyboard is pressed."""
+
         if key == arcade.key.F11:
             self.window.set_fullscreen(not self.window.fullscreen)
         elif key == arcade.key.ESCAPE:
@@ -211,6 +233,8 @@ class GameView(arcade.View):
             self.player.next_direction = (0, 1)
         elif key == arcade.key.LEFT:
             self.player.next_direction = (0, -1)
+
+
         elif key == arcade.key.F1:
             self.cheat_mode = not self.cheat_mode
             if not self.cheat_mode:

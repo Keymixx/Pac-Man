@@ -2,7 +2,7 @@ N, E, S, W = 1, 2, 4, 8
 
 
 class Player:
-    def __init__(self, start_col, start_row, tile_size, maze: list[list[int]]):
+    def __init__(self, start_col, start_row, tile_size, maze: list[list[int]], textures):
         self.tile_size = tile_size
         self.center_y = start_row * tile_size + (tile_size // 2)
         self.center_x = start_col * tile_size + (tile_size // 2)
@@ -12,6 +12,10 @@ class Player:
         self.next_direction = (1, 0)
         self.maze = maze[::-1]
         self.super = False
+        self.animation_timer = 0.0
+        self.current_frame = 0
+        self.textures = textures
+        self.texture = textures["up"][2]
 
     def row_col(self) -> tuple:
         row = int(self.center_y // self.tile_size)
@@ -75,9 +79,33 @@ class Player:
         row, col = self.row_col()
         cy, cx = self.axis_center(row, col)
 
+        ndy, ndx = self.next_direction
+        dy, dx = self.direction
+
+        if (ndx != 0 and ndx == -dx) or (ndy != 0 and ndy == -dy):
+            self.direction = self.next_direction
+
         if self.will_cross_axis() or self.direction == (0, 0):
             self.center_y = cy
             self.center_x = cx
             self.update_direction()
 
         self.move()
+
+    def update_animation(self):
+        if self.direction == (0, 0):
+            self.current_frame = 0
+        else:
+            self.animation_timer += 0.016  
+            if self.animation_timer >= 0.1:
+                self.animation_timer = 0.0
+                self.current_frame = (self.current_frame + 1) % 3 
+        
+        if self.direction == (0, 1):
+            self.texture = self.textures["right"][self.current_frame]
+        if self.direction == (0, -1):
+            self.texture = self.textures["left"][self.current_frame]
+        if self.direction == (1, 0):
+            self.texture = self.textures["up"][self.current_frame]
+        if self.direction == (-1, 0):
+            self.texture = self.textures["down"][self.current_frame]

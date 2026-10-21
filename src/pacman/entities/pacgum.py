@@ -86,7 +86,7 @@ class Pacgum:
         self.eated = False
         self.super_gum = False
         self.sprite = \
-            arcade.Sprite("assets/pacman_sprites/pacman_down_closed.png")
+            arcade.Sprite("assets/pacman_sprites/down/pacman_down_0.png")
 
         self.coord_y = y * tile_size + (tile_size // 2)
         self.coord_x = x * tile_size + (tile_size // 2)

@@ -6,7 +6,7 @@ class Ghost:
         self.tile_size = tile_size
         self.center_x = start_col * tile_size + (tile_size // 2)
         self.center_y = start_row * tile_size + (tile_size // 2)
-        self.speed = tile_size * 0.04
+        self.speed = tile_size * 0.03
         self.maze = maze[::-1]
         self.direction = (0, 0)
         self.next_direction = (0, 0)
@@ -81,7 +81,10 @@ class Ghost:
     def get_next_direction(self, player_pos: tuple[int, int]):
         history = self.bfs(player_pos)
         path = self.get_path(history, player_pos)
-        self.next_direction = self.get_direction(path[0])
+        if path:
+            self.next_direction = self.get_direction(path[0])
+        else:
+            self.next_direction = (0, 0)
 
     def will_cross_axis(self):
         row, col = self.row_col()
