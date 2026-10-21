@@ -5,6 +5,7 @@ from .models.config import ConfigFile
 from .entities.player import Player
 from .entities.pacgum import PacgumList
 from .entities.ghost import Ghost
+from time import sleep
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 800
@@ -22,6 +23,7 @@ class GameView(arcade.View):
 
         super().__init__()
 
+        self.player_alive = True
         self.textures_player = {"up": [], "down": [], "left": [], "right": []}
         direction = ["up", "down", "left", "right"]
 
@@ -85,6 +87,7 @@ class GameView(arcade.View):
         self.ghosts_frozen = False
 
         self._load_level(maze)
+
 
     def _load_level(self, maze: list[list[int]]) -> None:
         """Build everything that depends on the maze of the current level."""
@@ -178,21 +181,26 @@ class GameView(arcade.View):
             self.cheat_text.text = ""
 
     def on_update(self, delta_time: float):
-        self.player.update_position()
-        self.player.update_animation()
-        self.score += self.pacgum_list.pacgum_eated(self.player)
+        if self.player_alive:
+            self.player.update_position()
+            self.player.update_animation()
+            self.score += self.pacgum_list.pacgum_eated(self.player)
 
-        if all(p.eated for p in self.pacgum_list.pacgum_list):
-            self._next_level()
-            return
+            if all(p.eated for p in self.pacgum_list.pacgum_list):
+                self._next_level()
+                return
 
-        self.time_remaining = max(0, self.time_remaining - delta_time)
-        if not self.ghosts_frozen:
-            self.ghost.get_next_direction(self.player.row_col())
-            self.ghost.update_position()
-        
-        if self.ghost.row_col() == self.player.row_col():
-            self.lose_life()
+            self.time_remaining = max(0, self.time_remaining - delta_time)
+            if not self.ghosts_frozen:
+                self.ghost.get_next_direction(self.player.row_col())
+                self.ghost.update_position()
+
+            if self.ghost.row_col() == self.player.row_col():
+                self.lose_life()
+                self.player_alive = False
+        else:
+            sleep(0.5)
+            self.ghost_list.visible = False
         
 
     def on_draw(self):
