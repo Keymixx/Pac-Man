@@ -15,12 +15,14 @@
         {
             "name": "level_2",
             "width": 32,
-            "height": 34
+            "height": 34,
+            "level_max_time": 10
         },
         {
             "name": "level_3",
             "width": 36,
-            "height": 38
+            "height": 38,
+            "level_max_time": 150
         }
     ]
 }
