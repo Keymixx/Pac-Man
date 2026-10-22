@@ -103,7 +103,7 @@ class MenuView(arcade.View):
         ]
         rules_line_h = 24
         rules_pad = 14
-        rules_w = 260
+        rules_w = 280
         rules_h = len(rules_lines) * rules_line_h + 2 * rules_pad
         rules_cx = w - 20 - rules_w / 2
         rules_top = h - 20
