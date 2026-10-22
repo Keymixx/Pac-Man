@@ -195,7 +195,7 @@ class GameView(arcade.View):
                 self.ghost.get_next_direction(self.player.row_col())
                 self.ghost.update_position()
 
-            if if (not self.invincible
+            if (not self.invincible
                     and self.ghost.row_col() == self.player.row_col()):
                 self.lose_life()
                 self.player_alive = False
