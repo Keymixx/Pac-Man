@@ -201,7 +201,8 @@ class GameView(arcade.View):
         else:
             sleep(0.5)
             self.ghost_list.visible = False
-        
+
+        self.update_hud()
 
     def on_draw(self):
         """Render the screen."""
