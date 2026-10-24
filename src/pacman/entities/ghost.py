@@ -6,18 +6,28 @@ N, E, S, W = 1, 2, 4, 8
 class Ghost:
     def __init__(self, start_col, start_row, tile_size, maze: list[list[int]], textures):
         self.tile_size = tile_size
+        self.start_x = start_col
+        self.start_y = start_row
         self.center_x = start_col * tile_size + (tile_size // 2)
         self.center_y = start_row * tile_size + (tile_size // 2)
-        self.speed = tile_size * 0.03
+ 
+        self.normal_speed = tile_size * 0.03
+        self.eye_speed = tile_size * 0.06
+        self.speed = self.normal_speed
+ 
         self.maze = maze[::-1]
         self.direction = (0, 0)
         self.next_direction = (0, 0)
-        self.super = False
 
-        self.animation_timer = 0.0
+        self.super = False
+        self.is_eated = False
         self.current_frame = 0
         self.textures = textures
         self.actual_texture = textures["up"][0]
+
+        self.animation_timer = 0.0
+        self.respawn_timer = 0.0
+        self.super_timer = 0.0
 
     def row_col(self) -> tuple:
         row = int(self.center_y // self.tile_size)
@@ -87,18 +97,36 @@ class Ghost:
             return (0, -1)
 
     def get_next_direction(self, player_pos: tuple[int, int]):
-        history = self.bfs(player_pos)
-        path = self.get_path(history, player_pos)
-        if not self.super:
+        if self.is_eated:
+            target = (self.start_y, self.start_x)
+        else:
+            target = player_pos
+
+        history = self.bfs(target)
+        path = self.get_path(history, target)
+        neighbours = self.get_neighbours(self.row_col())
+
+        valid_choice = []
+        next_cell = None
+        if path and neighbours:
+            valid_choice = [c for c in neighbours if c != path[0]]
+            if valid_choice:
+                next_cell = random.choice(valid_choice)
+
+        if not self.super or self.is_eated:
             if path:
-                self.next_direction = self.get_direction(path[0])
+                if random.randint(0, 7) == 5 and not self.is_eated and next_cell:
+                    self.next_direction = self.get_direction(next_cell)
+                else:
+                    self.next_direction = self.get_direction(path[0])
             else:
                 self.next_direction = (0, 0)
         else:
             if path:
-                neighbours = self.get_neighbours(self.row_col())
-                next_cell = random.choice([c for c in neighbours if c != path[0]])
-                self.next_direction = self.get_direction(next_cell)
+                if not valid_choice or not next_cell:
+                    self.next_direction = self.get_direction(path[0])
+                else:
+                    self.next_direction = self.get_direction(next_cell)
             else:
                 self.next_direction = (0, 0)
 
@@ -152,6 +180,11 @@ class Ghost:
             self.direction = (0, 0)
 
     def update_position(self):
+        if self.is_eated:
+            self.speed = self.eye_speed
+        else:
+            self.speed = self.normal_speed
+
         row, col = self.row_col()
         cy, cx = self.axis_center(row, col)
         dy, dx = self.direction
@@ -172,10 +205,22 @@ class Ghost:
                 self.animation_timer = 0.0
                 self.current_frame = (self.current_frame + 1) % 2
 
-        print(self.current_frame)
+        if self.is_eated:
+            if self.direction == (0, 1):
+                self.actual_texture = self.textures["right"][2]
+            if self.direction == (0, -1):
+                self.actual_texture = self.textures["left"][2]
+            if self.direction == (1, 0):
+                self.actual_texture = self.textures["up"][2]
+            if self.direction == (-1, 0):
+                self.actual_texture = self.textures["down"][2]
 
-        if self.super:
-            self.actual_texture = self.textures["afraid"][self.current_frame]
+        elif self.super:
+            if self.super_timer > 3:
+                self.actual_texture = self.textures["afraid"][self.current_frame]
+            else:
+                self.actual_texture = self.textures["afraid"][self.current_frame + 1]
+
         else:
             if self.direction == (0, 1):
                 self.actual_texture = self.textures["right"][self.current_frame]
