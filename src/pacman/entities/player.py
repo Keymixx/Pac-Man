@@ -12,10 +12,11 @@ class Player:
         self.next_direction = (1, 0)
         self.maze = maze[::-1]
         self.super = False
+
         self.animation_timer = 0.0
         self.current_frame = 0
         self.textures = textures
-        self.texture = textures["up"][2]
+        self.actual_texture = textures["up"][2]
 
     def row_col(self) -> tuple:
         row = int(self.center_y // self.tile_size)
@@ -92,20 +93,21 @@ class Player:
 
         self.move()
 
-    def update_animation(self):
+    def update_animation(self, delta_time: float):
         if self.direction == (0, 0):
             self.current_frame = 0
         else:
-            self.animation_timer += 0.016  
+            self.animation_timer += delta_time  
             if self.animation_timer >= 0.1:
                 self.animation_timer = 0.0
                 self.current_frame = (self.current_frame + 1) % 3 
-        
+
         if self.direction == (0, 1):
-            self.texture = self.textures["right"][self.current_frame]
+            self.actual_texture = self.textures["right"][self.current_frame]
         if self.direction == (0, -1):
-            self.texture = self.textures["left"][self.current_frame]
+            self.actual_texture = self.textures["left"][self.current_frame]
         if self.direction == (1, 0):
-            self.texture = self.textures["up"][self.current_frame]
+            self.actual_texture = self.textures["up"][self.current_frame]
         if self.direction == (-1, 0):
-            self.texture = self.textures["down"][self.current_frame]
+            self.actual_texture = self.textures["down"][self.current_frame]
+    

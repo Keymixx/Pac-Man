@@ -31,9 +31,17 @@ class GameView(arcade.View):
             for i in range(3):
                 texture = arcade.load_texture(f"assets/pacman_sprites/{d}/pacman_{d}_{i}.png")
                 self.textures_player[d].append(texture)
-        
-        
-        
+
+        self.ghost_textures = {"blinky": {}}
+        direction = ["up", "down", "left", "right", "afraid"]
+
+        for key in self.ghost_textures.keys():
+            for d in direction:
+                self.ghost_textures[key][d] = []
+                for i in range(2):
+                    texture = arcade.load_texture(f"assets/ghost_sprites/{key}/{d}{i}.png")
+                    self.ghost_textures[key][d].append(texture)
+
         self.game_config = config
         self.background_color = MAZE_COLOR
 
@@ -109,22 +117,20 @@ class GameView(arcade.View):
         self.player = Player(start_col=3, start_row=3,
                              tile_size=self.tile_size, maze=maze,
                              textures=self.textures_player)
-
         self.player_sprite = arcade.Sprite()
-        self.player_sprite.texture = self.player.texture
+        self.player_sprite.texture = self.player.actual_texture
         self.player_sprite.width = self.player.size
         self.player_sprite.height = self.player.size
-        
-
+        self.super_timer = 0.0   
         self.player_list = arcade.SpriteList()
         self.player_list.append(self.player_sprite)
 
-        self.ghost = Ghost(15, 15, self.tile_size, maze)
-        self.ghost_list = arcade.SpriteList()
-        self.ghost_sprite = arcade.Sprite(
-            "assets/ghost_sprites/blinky/sprite-6-1.png")
+        self.ghost = Ghost(15, 15, self.tile_size, maze, self.ghost_textures["blinky"])
+        self.ghost_sprite = arcade.Sprite()
+        self.ghost_sprite.texture = self.ghost.actual_texture
         self.ghost_sprite.width = self.tile_size * 0.6
         self.ghost_sprite.height = self.tile_size * 0.6
+        self.ghost_list = arcade.SpriteList()
         self.ghost_list.append(self.ghost_sprite)
 
         self.update_hud()
@@ -183,8 +189,24 @@ class GameView(arcade.View):
     def on_update(self, delta_time: float):
         if self.player_alive:
             self.player.update_position()
-            self.player.update_animation()
-            self.score += self.pacgum_list.pacgum_eated(self.player)
+            self.player.update_animation(delta_time)
+            self.ghost.update_animation(delta_time)
+
+            earned_point = self.pacgum_list.pacgum_eated(self.player)
+            if earned_point > 0:
+                self.score += earned_point
+                if self.player.super:
+                    self.super_timer = 8.0
+                    self.player.super = False
+                    self.ghost.super = True
+
+            if self.super_timer > 0:
+                self.super_timer -= delta_time
+                print("super", delta_time)
+                if self.super_timer <= 0:
+                    self.super_timer = 0.0
+                    self.ghost.super = False
+
 
             if all(p.eated for p in self.pacgum_list.pacgum_list):
                 self._next_level()
@@ -210,7 +232,8 @@ class GameView(arcade.View):
         self.clear()
         self.tiles_list.draw()
 
-        self.player_sprite.texture = self.player.texture
+        self.player_sprite.texture = self.player.actual_texture
+        self.ghost_sprite.texture = self.ghost.actual_texture
 
         self.player_sprite.center_x = self.player.center_x + self.offset_x
         self.player_sprite.center_y = self.player.center_y + self.offset_y

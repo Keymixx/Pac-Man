@@ -1,8 +1,10 @@
+import random
+
 N, E, S, W = 1, 2, 4, 8
 
 
 class Ghost:
-    def __init__(self, start_col, start_row, tile_size, maze: list[list[int]]):
+    def __init__(self, start_col, start_row, tile_size, maze: list[list[int]], textures):
         self.tile_size = tile_size
         self.center_x = start_col * tile_size + (tile_size // 2)
         self.center_y = start_row * tile_size + (tile_size // 2)
@@ -10,6 +12,12 @@ class Ghost:
         self.maze = maze[::-1]
         self.direction = (0, 0)
         self.next_direction = (0, 0)
+        self.super = False
+
+        self.animation_timer = 0.0
+        self.current_frame = 0
+        self.textures = textures
+        self.actual_texture = textures["up"][0]
 
     def row_col(self) -> tuple:
         row = int(self.center_y // self.tile_size)
@@ -81,10 +89,19 @@ class Ghost:
     def get_next_direction(self, player_pos: tuple[int, int]):
         history = self.bfs(player_pos)
         path = self.get_path(history, player_pos)
-        if path:
-            self.next_direction = self.get_direction(path[0])
+        if not self.super:
+            if path:
+                self.next_direction = self.get_direction(path[0])
+            else:
+                self.next_direction = (0, 0)
         else:
-            self.next_direction = (0, 0)
+            if path:
+                neighbours = self.get_neighbours(self.row_col())
+                next_cell = random.choice([c for c in neighbours if c != path[0]])
+                self.next_direction = self.get_direction(next_cell)
+            else:
+                self.next_direction = (0, 0)
+
 
     def will_cross_axis(self):
         row, col = self.row_col()
@@ -145,3 +162,26 @@ class Ghost:
             self.update_direction()
 
         self.move()
+
+    def update_animation(self, delta_time):
+        if self.direction == (0, 0):
+            self.current_frame = 0
+        else:
+            self.animation_timer += 0.016
+            if self.animation_timer >= 0.1:
+                self.animation_timer = 0.0
+                self.current_frame = (self.current_frame + 1) % 2
+
+        print(self.current_frame)
+
+        if self.super:
+            self.actual_texture = self.textures["afraid"][self.current_frame]
+        else:
+            if self.direction == (0, 1):
+                self.actual_texture = self.textures["right"][self.current_frame]
+            if self.direction == (0, -1):
+                self.actual_texture = self.textures["left"][self.current_frame]
+            if self.direction == (1, 0):
+                self.actual_texture = self.textures["up"][self.current_frame]
+            if self.direction == (-1, 0):
+                self.actual_texture = self.textures["down"][self.current_frame]
