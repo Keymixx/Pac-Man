@@ -73,7 +73,7 @@ class MenuView(arcade.View):
             "F1 = Cheat mode",
             "+ F = Freeze",
             "+ L = +1 Life",
-            "+ I = Invi",
+            "+ I = Invulnerability",
             "+ N = Next stage",
         ]
         line_h = 26
