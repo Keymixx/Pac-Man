@@ -16,7 +16,7 @@ HUD_HEIGHT = 60
 BORDER_THICKNESS = 1
 HUD_BORDER_COLOR = (25, 60, 150)
 MAZE_AREA_HEIGHT = WINDOW_HEIGHT - HUD_HEIGHT
-RESPAWN_TIME = 10
+RESPAWN_TIME = 5
 FREEZE_TIME = 2
 
 
@@ -272,13 +272,23 @@ class GameView(arcade.View):
         if self.player_alive and not self.invincible:
             for ghost in self.ghosts:
                 if ghost.row_col() == self.player.row_col():
+                    
                     if ghost.super and not ghost.is_eated:
                         # Pac-man mange fantome
                         ghost.is_eated = True
+                        
+                        # Vitesse des yeux
+                        ghost_spawn = (ghost.start_y, ghost.start_x)
+                        history = ghost.bfs(ghost_spawn)
+                        path = ghost.get_path(history, ghost_spawn)
+                        if path:
+                            ghost.eye_speed = ((len(path) + 1) * ghost.tile_size) / (60 * RESPAWN_TIME)
+                        
                         ghost.super = False
                         self.score += self.points_per_ghost
                         self.freeze_timer = 0.5
                         ghost.respawn_timer = RESPAWN_TIME
+                    
                     elif not ghost.is_eated:
                         # Fantome mange Pac-man
                         self.lose_life()
