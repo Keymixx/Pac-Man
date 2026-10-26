@@ -100,7 +100,6 @@ class GameView(arcade.View):
 
         self._load_level(maze)
 
-
     def _load_level(self, maze: list[list[int]]) -> None:
         """Build everything that depends on the maze of the current level."""
         height = len(maze)
@@ -174,8 +173,7 @@ class GameView(arcade.View):
         levels = self.game_config.levels
 
         if self.current_level_index >= len(levels):
-            print(f"All levels completed! Final score: {self.score}")
-            self._back_to_menu()
+            self._end_game(won=True, reason="All levels completed")
             return
 
         level = levels[self.current_level_index]
@@ -191,6 +189,12 @@ class GameView(arcade.View):
         """Switch back to the main menu."""
         from .views.menu_view import MenuView
         self.window.show_view(MenuView(self.game_config))
+
+    def _end_game(self, won: bool, reason: str) -> None:
+        """Switch to the end screen (game over or victory)."""
+        from .views.end_view import EndView
+        self.window.show_view(
+            EndView(self.game_config, self.score, won, reason))
 
     def update_hud(self):
         """Refresh HUD text objects from current game state."""
@@ -210,6 +214,12 @@ class GameView(arcade.View):
             self.cheat_text.text = ""
 
     def on_update(self, delta_time: float):
+        if self.lives <= 0:
+            self._end_game(won=False, reason="No lives left")
+            return
+        if self.time_remaining <= 0:
+            self._end_game(won=False, reason="Time's up")
+            return
         if self.freeze_timer > 0:
             self.freeze_timer -= delta_time
             if self.freeze_timer <= 0:
@@ -224,7 +234,6 @@ class GameView(arcade.View):
             self.player.update_position()
             self.player.update_animation(delta_time)
 
-        # MISE À JOUR DES 4 FANTÔMES
         for ghost in self.ghosts:
             ghost.update_animation(delta_time)
 
@@ -240,7 +249,6 @@ class GameView(arcade.View):
                 ghost.get_next_direction(self.player.row_col())
                 ghost.update_position()
 
-        # GESTION DES PACGUMS
         if self.player_alive:
             earned_point = self.pacgum_list.pacgum_eated(self.player)
             if earned_point > 0:
@@ -252,7 +260,6 @@ class GameView(arcade.View):
                         if not ghost.is_eated:
                             ghost.super = True
 
-        # DÉCOMPTE DU SUPER TIMER
         if self.super_timer > 0:
             self.super_timer -= delta_time
             if self.super_timer <= 0:
@@ -260,37 +267,32 @@ class GameView(arcade.View):
                 for ghost in self.ghosts:
                     ghost.super = False
 
-        # VERIF SI FIN DE NIVEAU
         if all(p.eated for p in self.pacgum_list.pacgum_list):
             self._next_level()
             return
 
-        # DÉCOMPTE DU TEMPS
         self.time_remaining = max(0, self.time_remaining - delta_time)
 
-        # GESTION DES COLLISIONS
         if self.player_alive and not self.invincible:
             for ghost in self.ghosts:
                 if ghost.row_col() == self.player.row_col():
-                    
+
                     if ghost.super and not ghost.is_eated:
-                        # Pac-man mange fantome
+
                         ghost.is_eated = True
-                        
-                        # Vitesse des yeux
+
                         ghost_spawn = (ghost.start_y, ghost.start_x)
                         history = ghost.bfs(ghost_spawn)
                         path = ghost.get_path(history, ghost_spawn)
                         if path:
                             ghost.eye_speed = ((len(path) + 1) * ghost.tile_size) / (60 * RESPAWN_TIME)
-                        
+
                         ghost.super = False
                         self.score += self.points_per_ghost
                         self.freeze_timer = 0.5
                         ghost.respawn_timer = RESPAWN_TIME
-                    
+
                     elif not ghost.is_eated:
-                        # Fantome mange Pac-man
                         self.lose_life()
                         self.player_alive = False
                         self.freeze_timer = 2.0
@@ -311,7 +313,6 @@ class GameView(arcade.View):
             self.ghost_list[i].texture = ghost.actual_texture
             self.ghost_list[i].center_x = ghost.center_x + self.offset_x
             self.ghost_list[i].center_y = ghost.center_y + self.offset_y
-
 
         self.pacgum_list.show_pacgum(self.offset_y, self.offset_x).draw()
         self.player_list.draw()
@@ -339,7 +340,6 @@ class GameView(arcade.View):
             self.player.next_direction = (0, 1)
         elif key == arcade.key.LEFT:
             self.player.next_direction = (0, -1)
-
 
         elif key == arcade.key.F1:
             self.cheat_mode = not self.cheat_mode
