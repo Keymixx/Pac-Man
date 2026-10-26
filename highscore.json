@@ -1,16 +1,44 @@
 {
     "highscores": [
-        {"name": "Test0", "score": 150},
-        {"name": "Test1", "score": 1110},
-        {"name": "Test2", "score": 20},
-        {"name": "CarlGoat", "score": 4200},
-        {"name": "Test3", "score": 340},
-        {"name": "MaxGoat", "score": 2750},
-        {"name": "Test5", "score": 20},
-        {"name": "Test6", "score": 980},
-        {"name": "Test7", "score": 610},
-        {"name": "Test8", "score": 1870},
-        {"name": "Test9", "score": 90},
-        {"name": "Test10", "score": 0}
+        {
+            "name": "CarlGoat",
+            "score": 4200
+        },
+        {
+            "name": "Win",
+            "score": 3500
+        },
+        {
+            "name": "MaxGoat",
+            "score": 2750
+        },
+        {
+            "name": "Test8",
+            "score": 1870
+        },
+        {
+            "name": "GameOver",
+            "score": 1470
+        },
+        {
+            "name": "Test1",
+            "score": 1110
+        },
+        {
+            "name": "Test6",
+            "score": 980
+        },
+        {
+            "name": "Test7",
+            "score": 610
+        },
+        {
+            "name": "Test3",
+            "score": 340
+        },
+        {
+            "name": "a",
+            "score": 260
+        }
     ]
 }
