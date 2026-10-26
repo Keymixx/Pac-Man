@@ -113,14 +113,14 @@ class GameView(arcade.View):
         level = config.levels[self.current_level_index]
         self.maze = maze
         self.level = self.current_level_index + 1
-        self.time_remaining = float(level.level_max_time)
 
         self.tiles_list, self.tile_size, self.offset_y, self.offset_x = \
             build_maze(maze, WINDOW_WIDTH, MAZE_AREA_HEIGHT,
                        height_hud=HUD_HEIGHT)
 
         if not self.is_retry:
-            self.pacgum_list = PacgumList(config.pacgum,
+            self.time_remaining = float(level.level_max_time)
+            self.pacgum_list = PacgumList(config.percent_pacgum,
                                           config.points_per_super_pacgum,
                                           config.points_per_pacgum,
                                           maze)

@@ -20,7 +20,7 @@ class ConfigFile(BaseModel):
             raise ValueError("Highscore file must be a JSON")
         return file_name
     lives: int = Field(default=3, gt=0)
-    pacgum: int = Field(gt=0)
+    percent_pacgum: int = Field(gt=0, lt=101)
     points_per_pacgum: int
     points_per_super_pacgum: int
     points_per_ghost: int

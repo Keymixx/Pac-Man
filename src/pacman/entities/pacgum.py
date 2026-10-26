@@ -6,9 +6,9 @@ from .player import Player
 
 
 class PacgumList:
-    def __init__(self, nb_pacgum: int, supergum_point: int,
+    def __init__(self, percent_pacgum: int, supergum_point: int,
                  gum_point: int, maze: list[list[int]]):
-        self.nb_pacgum = nb_pacgum
+        self.percent_pacgum = percent_pacgum
         self.supergum_point = supergum_point
         self.gum_point = gum_point
 
@@ -20,6 +20,9 @@ class PacgumList:
 
         self.sprite_list = arcade.SpriteList()
 
+    # def calcul_nb_pacgum(self, percent: int):
+
+    
     def generate_sample(self) -> List[Tuple[int, int]]:
         maze = self.maze[::-1]
         valid_cell: list[Tuple[int, int]] = []
@@ -32,7 +35,8 @@ class PacgumList:
                 if (y, x) not in corners and cell != 15:
                     valid_cell.append((y, x))
 
-        sample = random.sample(valid_cell, self.nb_pacgum)
+        nb_pacgum = int(len(valid_cell) * (self.percent_pacgum / 100))
+        sample = random.sample(valid_cell, nb_pacgum)
         return sample
 
     def init_pacgum(self, tile_size: int):
