@@ -1,27 +1,31 @@
 import random
 
+import arcade
+
 N, E, S, W = 1, 2, 4, 8
 
 
 class Ghost:
-    def __init__(self, start_col, start_row, tile_size, maze: list[list[int]], textures):
+    def __init__(self, start_col, start_row,
+                 tile_size, maze: list[list[int]],
+                 textures: dict[str, list[arcade.Texture]]):
         self.tile_size = tile_size
         self.start_x = start_col
         self.start_y = start_row
         self.center_x = start_col * tile_size + (tile_size // 2)
         self.center_y = start_row * tile_size + (tile_size // 2)
- 
+
         self.normal_speed = tile_size * 0.03
         self.eye_speed = tile_size * 0.06
         self.speed = self.normal_speed
- 
+
         self.maze = maze[::-1]
         self.direction = (0, 0)
         self.next_direction = (0, 0)
 
         self.super = False
         self.is_eated = False
-        self.current_frame = 0
+        self.frame = 0
         self.textures = textures
         self.actual_texture = textures["up"][0]
 
@@ -115,7 +119,8 @@ class Ghost:
 
         if not self.super or self.is_eated:
             if path:
-                if random.randint(0, 7) == 5 and not self.is_eated and next_cell:
+                if (random.randint(0, 7) == 5 and
+                        not self.is_eated and next_cell):
                     self.next_direction = self.get_direction(next_cell)
                 else:
                     self.next_direction = self.get_direction(path[0])
@@ -129,7 +134,6 @@ class Ghost:
                     self.next_direction = self.get_direction(next_cell)
             else:
                 self.next_direction = (0, 0)
-
 
     def will_cross_axis(self):
         row, col = self.row_col()
@@ -198,12 +202,12 @@ class Ghost:
 
     def update_animation(self, delta_time):
         if self.direction == (0, 0):
-            self.current_frame = 0
+            self.frame = 0
         else:
             self.animation_timer += 0.016
             if self.animation_timer >= 0.1:
                 self.animation_timer = 0.0
-                self.current_frame = (self.current_frame + 1) % 2
+                self.frame = (self.frame + 1) % 2
 
         if self.is_eated:
             if self.direction == (0, 1):
@@ -217,16 +221,16 @@ class Ghost:
 
         elif self.super:
             if self.super_timer > 3:
-                self.actual_texture = self.textures["afraid"][self.current_frame]
+                self.actual_texture = self.textures["afraid"][self.frame]
             else:
-                self.actual_texture = self.textures["afraid"][self.current_frame + 1]
+                self.actual_texture = self.textures["afraid"][self.frame + 1]
 
         else:
             if self.direction == (0, 1):
-                self.actual_texture = self.textures["right"][self.current_frame]
+                self.actual_texture = self.textures["right"][self.frame]
             if self.direction == (0, -1):
-                self.actual_texture = self.textures["left"][self.current_frame]
+                self.actual_texture = self.textures["left"][self.frame]
             if self.direction == (1, 0):
-                self.actual_texture = self.textures["up"][self.current_frame]
+                self.actual_texture = self.textures["up"][self.frame]
             if self.direction == (-1, 0):
-                self.actual_texture = self.textures["down"][self.current_frame]
+                self.actual_texture = self.textures["down"][self.frame]

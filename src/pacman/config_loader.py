@@ -1,5 +1,6 @@
-from .models.config import ConfigFile
 import json
+
+from .models.config import ConfigFile
 
 
 def config_loader(config_path: str) -> ConfigFile:

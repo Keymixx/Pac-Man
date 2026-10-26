@@ -1,11 +1,11 @@
 import arcade
+
+from .entities.ghost import Ghost
+from .entities.pacgum import PacgumList
+from .entities.player import Player
 from .maze.maze_builder import build_maze
 from .maze.maze_factory import generate_maze
 from .models.config import ConfigFile
-from .entities.player import Player
-from .entities.pacgum import PacgumList
-from .entities.ghost import Ghost
-from time import sleep
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 800
@@ -26,27 +26,36 @@ class GameView(arcade.View):
         super().__init__()
 
         self.player_alive = True
-        self.textures_player = {"up": [], "down": [], "left": [], "right": [], "death": []}
-        direction = ["up", "down", "left", "right"]
+        self.textures_player = {"up": [],
+                                "down": [],
+                                "left": [],
+                                "right": [],
+                                "death": []}
 
         for d in self.textures_player.keys():
             if d == "death":
                 for i in range(15):
-                    texture = arcade.load_texture(f"assets/pacman_sprites/{d}/pacman_{d}_{i}.png")
+                    texture = arcade.load_texture("assets/pacman_sprites"
+                                                  f"/{d}/pacman_{d}_{i}.png")
                     self.textures_player[d].append(texture)
             else:
                 for i in range(3):
-                    texture = arcade.load_texture(f"assets/pacman_sprites/{d}/pacman_{d}_{i}.png")
+                    texture = arcade.load_texture("assets/pacman_sprites"
+                                                  f"/{d}/pacman_{d}_{i}.png")
                     self.textures_player[d].append(texture)
 
-        self.ghost_textures = {"blinky": {}, "pinky": {}, "inky": {}, "clyde": {}}
+        self.ghost_textures = {"blinky": {},
+                               "pinky": {},
+                               "inky": {},
+                               "clyde": {}}
         direction = ["up", "down", "left", "right", "afraid"]
 
         for key in self.ghost_textures.keys():
             for d in direction:
                 self.ghost_textures[key][d] = []
                 for i in range(3):
-                    texture = arcade.load_texture(f"assets/ghost_sprites/{key}/{d}{i}.png")
+                    texture = arcade.load_texture(f"assets/ghost_sprites"
+                                                  f"/{key}/{d}{i}.png")
                     self.ghost_textures[key][d].append(texture)
 
         self.game_config = config
@@ -151,7 +160,11 @@ class GameView(arcade.View):
         self.ghost_list = arcade.SpriteList()
 
         for config in ghost_configs:
-            ghost = Ghost(config["col"], config["row"], self.tile_size, maze, self.ghost_textures[config["name"]])
+            ghost = Ghost(config["col"],
+                          config["row"],
+                          self.tile_size,
+                          maze,
+                          self.ghost_textures[config["name"]])
             self.ghosts.append(ghost)
 
             ghost_sprite = arcade.Sprite()
@@ -291,7 +304,7 @@ class GameView(arcade.View):
         # DECOMPTE DU TEMPS
         self.time_remaining = max(0, self.time_remaining - delta_time)
 
-        #GESTION DES COLLISIONS
+        # GESTION DES COLLISIONS
         if self.player_alive and not self.invincible:
             for ghost in self.ghosts:
                 if ghost.row_col() == self.player.row_col():
@@ -305,7 +318,9 @@ class GameView(arcade.View):
                         history = ghost.bfs(ghost_spawn)
                         path = ghost.get_path(history, ghost_spawn)
                         if path:
-                            ghost.eye_speed = ((len(path) + 1) * ghost.tile_size) / (60 * RESPAWN_TIME)
+                            ghost.eye_speed = (
+                                (len(path) + 1) * ghost.tile_size
+                                / (60 * RESPAWN_TIME))
 
                         ghost.super = False
                         self.score += self.points_per_ghost

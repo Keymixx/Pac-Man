@@ -1,4 +1,5 @@
 import json
+
 from .models.highscore import HighscoreEntry, HighscoreFile
 
 MAX_HIGHSCORES = 10

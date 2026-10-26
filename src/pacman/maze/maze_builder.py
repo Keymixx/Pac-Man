@@ -20,7 +20,7 @@ def build_maze(maze: list[list[int]],
         for x, v in enumerate(row):
             tile = arcade.Sprite(tiles_sprites[v])
 
-            tile.width = tile_size 
+            tile.width = tile_size
             tile.height = tile_size
 
             offset_x = (width - (maze_width * tile_size)) / 2

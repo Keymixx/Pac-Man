@@ -1,8 +1,12 @@
+import arcade
+
 N, E, S, W = 1, 2, 4, 8
 
 
 class Player:
-    def __init__(self, start_col, start_row, tile_size, maze: list[list[int]], textures):
+    def __init__(self, start_col, start_row, tile_size,
+                 maze: list[list[int]],
+                 textures: dict[str, list[arcade.Texture]]):
         self.tile_size = tile_size
         self.center_y = start_row * tile_size + (tile_size // 2)
         self.center_x = start_col * tile_size + (tile_size // 2)

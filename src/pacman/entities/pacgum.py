@@ -1,7 +1,9 @@
-import random
-import arcade
 import math
-from typing import Tuple, List
+import random
+
+import arcade
+
+from typing import List, Tuple
 from .player import Player
 
 
@@ -20,9 +22,6 @@ class PacgumList:
 
         self.sprite_list = arcade.SpriteList()
 
-    # def calcul_nb_pacgum(self, percent: int):
-
-    
     def generate_sample(self) -> List[Tuple[int, int]]:
         maze = self.maze[::-1]
         valid_cell: list[Tuple[int, int]] = []
