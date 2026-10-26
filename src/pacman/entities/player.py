@@ -7,12 +7,13 @@ class Player:
         self.center_y = start_row * tile_size + (tile_size // 2)
         self.center_x = start_col * tile_size + (tile_size // 2)
         self.size = tile_size * 0.7
-        self.speed = tile_size * 0.055
-        self.direction = (1, 0)
-        self.next_direction = (1, 0)
+        self.speed = tile_size * 0.08
+        self.direction = (0, 0)
+        self.next_direction = (0, 0)
         self.maze = maze[::-1]
         self.super = False
 
+        self.is_alive = True
         self.animation_timer = 0.0
         self.current_frame = 0
         self.textures = textures
@@ -94,20 +95,27 @@ class Player:
         self.move()
 
     def update_animation(self, delta_time: float):
-        if self.direction == (0, 0):
+        if self.direction == (0, 0) and self.is_alive:
             self.current_frame = 0
-        else:
-            self.animation_timer += delta_time  
-            if self.animation_timer >= 0.1:
-                self.animation_timer = 0.0
-                self.current_frame = (self.current_frame + 1) % 3 
 
-        if self.direction == (0, 1):
+        self.animation_timer += delta_time
+        if self.animation_timer >= 0.1:
+            self.animation_timer = 0.0
+            self.current_frame = (self.current_frame + 1) % 3
+
+        elif self.direction == (0, 1):
             self.actual_texture = self.textures["right"][self.current_frame]
-        if self.direction == (0, -1):
+        elif self.direction == (0, -1):
             self.actual_texture = self.textures["left"][self.current_frame]
-        if self.direction == (1, 0):
+        elif self.direction == (1, 0):
             self.actual_texture = self.textures["up"][self.current_frame]
-        if self.direction == (-1, 0):
+        elif self.direction == (-1, 0):
             self.actual_texture = self.textures["down"][self.current_frame]
-    
+
+    def death_animation(self, delta_time: float):
+        self.animation_timer += delta_time
+        if self.animation_timer >= 0.1:
+            self.animation_timer = 0.0
+            self.current_frame = (self.current_frame + 1) % 15
+
+        self.actual_texture = self.textures["death"][self.current_frame]

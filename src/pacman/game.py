@@ -26,13 +26,18 @@ class GameView(arcade.View):
         super().__init__()
 
         self.player_alive = True
-        self.textures_player = {"up": [], "down": [], "left": [], "right": []}
+        self.textures_player = {"up": [], "down": [], "left": [], "right": [], "death": []}
         direction = ["up", "down", "left", "right"]
 
-        for d in direction:
-            for i in range(3):
-                texture = arcade.load_texture(f"assets/pacman_sprites/{d}/pacman_{d}_{i}.png")
-                self.textures_player[d].append(texture)
+        for d in self.textures_player.keys():
+            if d == "death":
+                for i in range(15):
+                    texture = arcade.load_texture(f"assets/pacman_sprites/{d}/pacman_{d}_{i}.png")
+                    self.textures_player[d].append(texture)
+            else:
+                for i in range(3):
+                    texture = arcade.load_texture(f"assets/pacman_sprites/{d}/pacman_{d}_{i}.png")
+                    self.textures_player[d].append(texture)
 
         self.ghost_textures = {"blinky": {}, "pinky": {}, "inky": {}, "clyde": {}}
         direction = ["up", "down", "left", "right", "afraid"]
@@ -121,7 +126,12 @@ class GameView(arcade.View):
                                           maze)
             self.pacgum_list.init_pacgum(self.tile_size)
 
-        self.player = Player(start_col=3, start_row=3,
+        start_col = width // 2
+        start_row = height // 2
+        if maze[start_row][start_col] == 15:
+            start_col -= 1
+
+        self.player = Player(start_col=start_col, start_row=start_row,
                              tile_size=self.tile_size, maze=maze,
                              textures=self.textures_player)
         self.player_sprite = arcade.Sprite()
@@ -222,6 +232,8 @@ class GameView(arcade.View):
             return
         if self.freeze_timer > 0:
             self.freeze_timer -= delta_time
+            if not self.player_alive:
+                self.player.death_animation(delta_time)
             if self.freeze_timer <= 0:
                 self.freeze_timer = 0
                 if not self.player_alive:
@@ -234,6 +246,7 @@ class GameView(arcade.View):
             self.player.update_position()
             self.player.update_animation(delta_time)
 
+        # MISE A JOUR DES 4 FANTOMES
         for ghost in self.ghosts:
             ghost.update_animation(delta_time)
 
@@ -249,6 +262,7 @@ class GameView(arcade.View):
                 ghost.get_next_direction(self.player.row_col())
                 ghost.update_position()
 
+        # GESTION DES PACGUMS
         if self.player_alive:
             earned_point = self.pacgum_list.pacgum_eated(self.player)
             if earned_point > 0:
@@ -260,6 +274,7 @@ class GameView(arcade.View):
                         if not ghost.is_eated:
                             ghost.super = True
 
+        # DECOMPTE DU SUPER TIMER
         if self.super_timer > 0:
             self.super_timer -= delta_time
             if self.super_timer <= 0:
@@ -267,20 +282,25 @@ class GameView(arcade.View):
                 for ghost in self.ghosts:
                     ghost.super = False
 
+        # VERIF SI FIN DE NIVEAU
         if all(p.eated for p in self.pacgum_list.pacgum_list):
+            self.freeze_timer = 1
             self._next_level()
             return
 
+        # DECOMPTE DU TEMPS
         self.time_remaining = max(0, self.time_remaining - delta_time)
 
+        #GESTION DES COLLISIONS
         if self.player_alive and not self.invincible:
             for ghost in self.ghosts:
                 if ghost.row_col() == self.player.row_col():
 
                     if ghost.super and not ghost.is_eated:
-
+                        # Pac-man mange
                         ghost.is_eated = True
 
+                        # Vitesse des yeux
                         ghost_spawn = (ghost.start_y, ghost.start_x)
                         history = ghost.bfs(ghost_spawn)
                         path = ghost.get_path(history, ghost_spawn)
@@ -293,9 +313,12 @@ class GameView(arcade.View):
                         ghost.respawn_timer = RESPAWN_TIME
 
                     elif not ghost.is_eated:
+                        # Fantome mange Pac-man
                         self.lose_life()
                         self.player_alive = False
-                        self.freeze_timer = 2.0
+                        self.freeze_timer = 1.25
+                        for sprite in self.ghost_list:
+                            sprite.visible = False
                     break
 
         self.update_hud()
