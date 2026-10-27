@@ -12,6 +12,8 @@ package:
 	uv run --with pyinstaller pyinstaller --noconfirm --clean pacman.spec
 	cp -r assets config.json dist/pacman/
 	cp PACKAGE_README.txt dist/pacman/README.txt
+	cp play.sh dist/pacman/play.sh
+	chmod +x dist/pacman/play.sh dist/pacman/pacman
 	cd dist && zip -r pacman-linux.zip pacman
 
 debug:
@@ -24,8 +26,8 @@ clean:
 
 lint:
 	uv run flake8 src/
-	uv run mypy . --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+	uv run mypy src/ --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 
 lint-strict:
-	uv run flake8 .
-	uv run mypy . --strict
+	uv run flake8 src/
+	uv run mypy src/ --strict
