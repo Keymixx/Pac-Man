@@ -66,7 +66,7 @@ class MenuView(arcade.View):
 
         self._add_frame(105, 45, 170, 50)
         self.texts.append(arcade.Text(
-            "Exit = Echap", 105, 45, arcade.color.WHITE, 14,
+            "EXIT", 105, 45, arcade.color.WHITE, 14,
             anchor_x="center", anchor_y="center"))
 
         cheat_lines = [
@@ -144,6 +144,7 @@ class MenuView(arcade.View):
 
     def on_draw(self) -> None:
         self.clear()
+
         self.sprite_list.draw()
         for text in self.texts:
             text.draw()
@@ -155,4 +156,10 @@ class MenuView(arcade.View):
         elif key == arcade.key.F11:
             self.window.set_fullscreen(not self.window.fullscreen)
         elif key == arcade.key.ESCAPE:
+            arcade.close_window()
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        btn_x, btn_y, btn_w, btn_h = 105, 45, 170, 50
+        if (btn_x - btn_w / 2 <= x <= btn_x + btn_w / 2 and
+                btn_y - btn_h / 2 <= y <= btn_y + btn_h / 2):
             arcade.close_window()

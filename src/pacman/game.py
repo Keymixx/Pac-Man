@@ -174,7 +174,7 @@ class GameView(arcade.View):
             self.ghost_list.append(ghost_sprite)
 
         self.super_timer = 0.0
-        self.freeze_timer = 0.0
+        self.freeze_timer = 1.0
         self.respawn_ghost_timer = 0.0
 
         self.update_hud()

@@ -1,6 +1,6 @@
 from pathlib import Path
 from pydantic import BaseModel, Field, field_validator
-from typing import List
+from typing import List 
 
 
 class LevelStructure(BaseModel):
