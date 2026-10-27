@@ -219,6 +219,11 @@ class GameView(arcade.View):
         self.window.show_view(
             EndView(self.game_config, self.score, won, reason))
 
+    def _pause(self) -> None:
+        """Open the pause screen over the game."""
+        from .views.pause_view import PauseView
+        self.window.show_view(PauseView(self))
+
     def update_hud(self):
         """Refresh HUD text objects from current game state."""
         self.score_text.text = f"Score: {self.score}"
@@ -369,7 +374,7 @@ class GameView(arcade.View):
         if key == arcade.key.F11:
             self.window.set_fullscreen(not self.window.fullscreen)
         elif key == arcade.key.ESCAPE:
-            arcade.close_window()
+            self._pause()
         elif key == arcade.key.UP:
             self.player.next_direction = (1, 0)
         elif key == arcade.key.DOWN:
