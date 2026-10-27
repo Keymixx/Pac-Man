@@ -4,12 +4,12 @@ N, E, S, W = 1, 2, 4, 8
 
 
 class Player:
-    def __init__(self, start_col, start_row, tile_size,
+    def __init__(self, start_col: int, start_row: int, tile_size: int,
                  maze: list[list[int]],
                  textures: dict[str, list[arcade.Texture]]):
         self.tile_size = tile_size
-        self.center_y = start_row * tile_size + (tile_size // 2)
-        self.center_x = start_col * tile_size + (tile_size // 2)
+        self.center_y: float = start_row * tile_size + (tile_size // 2)
+        self.center_x: float = start_col * tile_size + (tile_size // 2)
         self.size = tile_size * 0.7
         self.speed = tile_size * 0.08
         self.direction = (0, 0)
@@ -28,12 +28,12 @@ class Player:
         col = int(self.center_x // self.tile_size)
         return row, col
 
-    def axis_center(self, row, col):
+    def axis_center(self, row: int, col: int) -> tuple[int, int]:
         cy = row * self.tile_size + (self.tile_size // 2)
         cx = col * self.tile_size + (self.tile_size // 2)
         return cy, cx
 
-    def will_cross_axis(self):
+    def will_cross_axis(self) -> bool:
         row, col = self.row_col()
         cy, cx = self.axis_center(row, col)
         dy, dx = self.direction
@@ -49,14 +49,16 @@ class Player:
             distance = (cx - self.center_x) * dx
             return 0 <= distance <= self.speed
 
-    def move(self):
+        return False
+
+    def move(self) -> None:
         y, x = self.direction
         if x != 0:
             self.center_x += self.speed * x
         if y != 0:
             self.center_y += self.speed * y
 
-    def update_direction(self):
+    def update_direction(self) -> None:
         row, col = self.row_col()
         cell = self.maze[row][col]
         ndy, ndx = self.next_direction
@@ -81,7 +83,7 @@ class Player:
         else:
             self.direction = (0, 0)
 
-    def update_position(self):
+    def update_position(self) -> None:
         row, col = self.row_col()
         cy, cx = self.axis_center(row, col)
 
@@ -98,7 +100,7 @@ class Player:
 
         self.move()
 
-    def update_animation(self, delta_time: float):
+    def update_animation(self, delta_time: float) -> None:
         if self.direction == (0, 0) and self.is_alive:
             self.current_frame = 0
 
@@ -116,7 +118,7 @@ class Player:
         elif self.direction == (-1, 0):
             self.actual_texture = self.textures["down"][self.current_frame]
 
-    def death_animation(self, delta_time: float):
+    def death_animation(self, delta_time: float) -> None:
         self.animation_timer += delta_time
         if self.animation_timer >= 0.1:
             self.animation_timer = 0.0

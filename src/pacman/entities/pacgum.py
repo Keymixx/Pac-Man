@@ -20,7 +20,7 @@ class PacgumList:
 
         self.maze = maze
 
-        self.sprite_list = arcade.SpriteList()
+        self.sprite_list: arcade.SpriteList = arcade.SpriteList()
 
     def generate_sample(self) -> List[Tuple[int, int]]:
         maze = self.maze[::-1]
@@ -38,7 +38,7 @@ class PacgumList:
         sample = random.sample(valid_cell, nb_pacgum)
         return sample
 
-    def init_pacgum(self, tile_size: int):
+    def init_pacgum(self, tile_size: int) -> None:
         sample = self.generate_sample()
         for coord in sample:
             new_pacgum = Pacgum(coord, tile_size)
@@ -53,14 +53,15 @@ class PacgumList:
             self.pacgum_list.append(super_pacgum)
             self.sprite_list.append(super_pacgum.sprite)
 
-    def show_pacgum(self, offset_y: int, offset_x: int):
+    def show_pacgum(self, offset_y: float,
+                    offset_x: float) -> arcade.SpriteList:
         for pacgum in self.pacgum_list:
             if not pacgum.eated:
                 pacgum.sprite.center_y = pacgum.coord_y + offset_y
                 pacgum.sprite.center_x = pacgum.coord_x + offset_x
         return self.sprite_list
 
-    def pacgum_eated(self, player: Player):
+    def pacgum_eated(self, player: Player) -> int:
         player_y, player_x = player.row_col()
 
         for pacgum in self.pacgum_list:
@@ -97,7 +98,7 @@ class Pacgum:
 
 
 class SuperPacgum(Pacgum):
-    def __init__(self, coord, tile_size):
+    def __init__(self, coord: tuple[int, int], tile_size: int):
         super().__init__(coord, tile_size)
         self.sprite.scale = tile_size * 0.008
         self.super_gum = True

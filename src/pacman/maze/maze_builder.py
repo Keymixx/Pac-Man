@@ -6,10 +6,10 @@ N, E, S, W = 1, 2, 4, 8
 def build_maze(maze: list[list[int]],
                width: int,
                height: int,
-               height_hud: int):
+               height_hud: int) -> tuple[arcade.SpriteList, int, float, float]:
 
     tiles_sprites = {i: f"assets/wall_sprites/wall_{i}.png" for i in range(16)}
-    tiles_list = arcade.SpriteList()
+    tiles_list: arcade.SpriteList = arcade.SpriteList()
 
     maze_height = len(maze)
     maze_width = len(maze[0])

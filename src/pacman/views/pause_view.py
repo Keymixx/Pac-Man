@@ -17,7 +17,7 @@ class PauseView(arcade.View):
         w = self.window.width
         h = self.window.height
 
-        self.overlay_list = arcade.SpriteList()
+        self.overlay_list: arcade.SpriteList = arcade.SpriteList()
         overlay = arcade.SpriteSolidColor(int(w), int(h), color=(0, 0, 0, 180))
         overlay.center_x = w / 2
         overlay.center_y = h / 2

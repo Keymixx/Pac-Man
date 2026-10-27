@@ -1,5 +1,6 @@
 import arcade
 
+from typing import Any
 from ..game import GameView, HUD_BORDER_COLOR
 from ..highscore_loader import load_highscores
 from ..maze.maze_factory import generate_maze
@@ -43,7 +44,7 @@ class MenuView(arcade.View):
         self.error_text = arcade.Text("", w / 2, 40, arcade.color.RED, 14,
                                       anchor_x="center")
 
-        self.sprite_list = arcade.SpriteList()
+        self.sprite_list: arcade.SpriteList = arcade.SpriteList()
         size = 50
         step = size + 8
         cx = w * 0.85
@@ -158,7 +159,8 @@ class MenuView(arcade.View):
         elif key == arcade.key.ESCAPE:
             arcade.close_window()
 
-    def on_mouse_press(self, x, y, button, modifiers):
+    def on_mouse_press(self, x: int, y: int,
+                       button: Any, modifiers: Any) -> None:
         btn_x, btn_y, btn_w, btn_h = 105, 45, 170, 50
         if (btn_x - btn_w / 2 <= x <= btn_x + btn_w / 2 and
                 btn_y - btn_h / 2 <= y <= btn_y + btn_h / 2):

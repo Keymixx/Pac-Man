@@ -1,19 +1,19 @@
-import random
-
 import arcade
+import random
+from typing import Any
 
 N, E, S, W = 1, 2, 4, 8
 
 
 class Ghost:
-    def __init__(self, start_col, start_row,
-                 tile_size, maze: list[list[int]],
+    def __init__(self, start_col: int, start_row: int,
+                 tile_size: int, maze: list[list[int]],
                  textures: dict[str, list[arcade.Texture]]):
         self.tile_size = tile_size
         self.start_x = start_col
         self.start_y = start_row
-        self.center_x = start_col * tile_size + (tile_size // 2)
-        self.center_y = start_row * tile_size + (tile_size // 2)
+        self.center_x: float = start_col * tile_size + (tile_size // 2)
+        self.center_y: float = start_row * tile_size + (tile_size // 2)
 
         self.normal_speed = tile_size * 0.03
         self.eye_speed = tile_size * 0.06
@@ -38,7 +38,7 @@ class Ghost:
         col = int(self.center_x // self.tile_size)
         return row, col
 
-    def axis_center(self, row, col):
+    def axis_center(self, row: int, col: int) -> tuple[int, int]:
         cy = row * self.tile_size + (self.tile_size // 2)
         cx = col * self.tile_size + (self.tile_size // 2)
         return cy, cx
@@ -59,11 +59,11 @@ class Ghost:
 
         return neighbours
 
-    def bfs(self, target: tuple[int, int]):
+    def bfs(self, target: tuple[int, int]) -> dict[Any, Any]:
         start = self.row_col()
         visited = set(start)
         queue = [start]
-        history = {}
+        history: dict[Any, Any] = {}
 
         while queue:
             cell = queue.pop(0)
@@ -77,8 +77,10 @@ class Ghost:
                     visited.add(neighbour)
                     history[neighbour] = cell
                     queue.append(neighbour)
+        return history
 
-    def get_path(self, history: dict, target: tuple[int, int]):
+    def get_path(self, history: dict,
+                 target: tuple[int, int]) -> list[tuple[int, int]]:
         current = target
         path = []
         start = self.row_col()
@@ -100,7 +102,7 @@ class Ghost:
         else:
             return (0, -1)
 
-    def get_next_direction(self, player_pos: tuple[int, int]):
+    def get_next_direction(self, player_pos: tuple[int, int]) -> None:
         if self.is_eated:
             target = (self.start_y, self.start_x)
         else:
@@ -135,7 +137,7 @@ class Ghost:
             else:
                 self.next_direction = (0, 0)
 
-    def will_cross_axis(self):
+    def will_cross_axis(self) -> bool:
         row, col = self.row_col()
         cy, cx = self.axis_center(row, col)
         dy, dx = self.direction
@@ -151,14 +153,16 @@ class Ghost:
             distance = (cx - self.center_x) * dx
             return 0 <= distance <= self.speed
 
-    def move(self):
+        return False
+
+    def move(self) -> None:
         y, x = self.direction
         if x != 0:
             self.center_x += self.speed * x
         if y != 0:
             self.center_y += self.speed * y
 
-    def update_direction(self):
+    def update_direction(self) -> None:
         row, col = self.row_col()
         cell = self.maze[row][col]
         ndy, ndx = self.next_direction
@@ -183,7 +187,7 @@ class Ghost:
         else:
             self.direction = (0, 0)
 
-    def update_position(self):
+    def update_position(self) -> None:
         if self.is_eated:
             self.speed = self.eye_speed
         else:
@@ -200,7 +204,7 @@ class Ghost:
 
         self.move()
 
-    def update_animation(self, delta_time):
+    def update_animation(self, delta_time: float) -> None:
         if self.direction == (0, 0):
             self.frame = 0
         else:

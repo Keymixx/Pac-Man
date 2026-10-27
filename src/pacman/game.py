@@ -1,5 +1,6 @@
 import arcade
 
+from typing import Any
 from .entities.ghost import Ghost
 from .entities.pacgum import PacgumList
 from .entities.player import Player
@@ -14,7 +15,7 @@ MAZE_COLOR = arcade.csscolor.BLACK
 
 HUD_HEIGHT = 60
 BORDER_THICKNESS = 1
-HUD_BORDER_COLOR = (25, 60, 150)
+HUD_BORDER_COLOR = (25, 60, 150, 255)
 MAZE_AREA_HEIGHT = WINDOW_HEIGHT - HUD_HEIGHT
 RESPAWN_TIME = 5
 FREEZE_TIME = 2
@@ -26,6 +27,7 @@ class GameView(arcade.View):
         super().__init__()
 
         self.player_alive = True
+        self.textures_player: dict[str, list[arcade.Texture]]
         self.textures_player = {"up": [],
                                 "down": [],
                                 "left": [],
@@ -44,6 +46,7 @@ class GameView(arcade.View):
                                                   f"/{d}/pacman_{d}_{i}.png")
                     self.textures_player[d].append(texture)
 
+        self.ghost_textures: dict[str, dict[str, list[arcade.Texture]]]
         self.ghost_textures = {"blinky": {},
                                "pinky": {},
                                "inky": {},
@@ -73,7 +76,7 @@ class GameView(arcade.View):
         self.hud_background.center_x = WINDOW_WIDTH / 2
         self.hud_background.center_y = HUD_HEIGHT / 2
 
-        self.hud_sprite_list = arcade.SpriteList()
+        self.hud_sprite_list: arcade.SpriteList = arcade.SpriteList()
         self.hud_sprite_list.append(self.hud_border)
         self.hud_sprite_list.append(self.hud_background)
 
@@ -147,24 +150,24 @@ class GameView(arcade.View):
         self.player_sprite.texture = self.player.actual_texture
         self.player_sprite.width = self.player.size
         self.player_sprite.height = self.player.size
-        self.player_list = arcade.SpriteList()
+        self.player_list: arcade.SpriteList = arcade.SpriteList()
         self.player_list.append(self.player_sprite)
 
-        ghost_configs = [
+        ghost_configs: list[dict[str, Any]] = [
             {"col": 0, "row": 0, "name": "blinky"},
             {"col": width - 1, "row": 0, "name": "pinky"},
             {"col": 0, "row": height - 1, "name": "inky"},
             {"col": width - 1, "row": height - 1, "name": "clyde"}
         ]
         self.ghosts = []
-        self.ghost_list = arcade.SpriteList()
+        self.ghost_list: arcade.SpriteList = arcade.SpriteList()
 
-        for config in ghost_configs:
-            ghost = Ghost(config["col"],
-                          config["row"],
+        for g_config in ghost_configs:
+            ghost = Ghost(g_config["col"],
+                          g_config["row"],
                           self.tile_size,
                           maze,
-                          self.ghost_textures[config["name"]])
+                          self.ghost_textures[g_config["name"]])
             self.ghosts.append(ghost)
 
             ghost_sprite = arcade.Sprite()
@@ -224,7 +227,7 @@ class GameView(arcade.View):
         from .views.pause_view import PauseView
         self.window.show_view(PauseView(self))
 
-    def update_hud(self):
+    def update_hud(self) -> None:
         """Refresh HUD text objects from current game state."""
         self.score_text.text = f"Score: {self.score}"
         self.lives_text.text = f"Lives: {self.lives}"
@@ -241,7 +244,7 @@ class GameView(arcade.View):
         else:
             self.cheat_text.text = ""
 
-    def on_update(self, delta_time: float):
+    def on_update(self, delta_time: float) -> None:
         if self.lives <= 0:
             self._end_game(won=False, reason="No lives left")
             return
@@ -343,7 +346,7 @@ class GameView(arcade.View):
 
         self.update_hud()
 
-    def on_draw(self):
+    def on_draw(self) -> None:
         """Render the screen."""
         self.clear()
         self.tiles_list.draw()
@@ -368,7 +371,7 @@ class GameView(arcade.View):
         self.time_text.draw()
         self.cheat_text.draw()
 
-    def on_key_press(self, key, key_modifiers):
+    def on_key_press(self, key: Any, key_modifiers: Any) -> None:
         """Called whenever a key on the keyboard is pressed."""
 
         if key == arcade.key.F11:
@@ -399,7 +402,7 @@ class GameView(arcade.View):
             self.ghosts_frozen = not self.ghosts_frozen
 
 
-def run_game(maze: list[list[int]], config: ConfigFile):
+def run_game(maze: list[list[int]], config: ConfigFile) -> None:
     window = arcade.Window(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
     window.show_view(GameView(maze, config))
     arcade.run()
