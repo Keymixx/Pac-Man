@@ -3,3 +3,6 @@ __pycache__
 .venv/
 .mypy_cache/
 test/
+build/
+dist/
+*.zip

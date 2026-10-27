@@ -1,10 +1,18 @@
-.PHONY: install run debug clean lint lint-strict
+.PHONY: install run debug clean lint lint-strict package
 
 install:
 	uv sync
 
 run:
 	uv run python3 -m pacman.main config.json
+
+package:
+	uv sync
+	rm -rf build dist
+	uv run --with pyinstaller pyinstaller --noconfirm --clean pacman.spec
+	cp -r assets config.json dist/pacman/
+	cp PACKAGE_README.txt dist/pacman/README.txt
+	cd dist && zip -r pacman-linux.zip pacman
 
 debug:
 	uv run python3 -m pdb -m pacman.main config.json
