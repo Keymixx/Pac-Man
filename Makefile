@@ -20,6 +20,7 @@ debug:
 	uv run python3 -m pdb -m pacman.main config.json
 
 clean:
+	rm -rf build dist
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	find . -type d -name ".mypy_cache" -exec rm -rf {} +
 	find . -type d -name ".pytest_cache" -exec rm -rf {} +
